@@ -1,0 +1,200 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right bottom, #e0eafc, #cfdef3);
+}
+
+.reminders-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+}
+
+/* Header */
+.reminders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.header-content h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+.header-content p {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25);
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.glass-card:hover {
+  transform: translateY(-5px);
+  background-color: #f9fafb;
+}
+
+/* Cartes rappels */
+.reminder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.reminder-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+}
+.reminder-card:hover {
+  transform: translateY(-5px);
+}
+
+.top-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.id {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+.status-pending {
+  background: #fde6e6;
+  color: #ef4444;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.status-sent {
+  background: #dcfce7;
+  color: #10b981;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.status-overdue {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+/* Infos patient */
+.patient-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+.icon-user {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+  color: #3b82f6;
+}
+
+/* Message */
+.message {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+.icon-envelope {
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  color: #10b981;
+}
+
+/* Date */
+.date {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+.icon-date {
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  color: #f59e0b;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.btn-action {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-action i {
+  font-size: 1.1rem;
+}
+.btn-edit {
+  color: #3b82f6;
+}
+.btn-edit:hover {
+  background: #e0e7ff;
+}
+.btn-delete {
+  color: #ef4444;
+}
+.btn-delete:hover {
+  background: #fee2e2;
+}
+.btn-view {
+  color: #10b981;
+}
+.btn-view:hover {
+  background: #dcfce7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reminder-grid {
+    grid-template-columns: 1fr;
+  }
+  .btn-primary {
+    width: 100%;
+  }
+}

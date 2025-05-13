@@ -1,0 +1,64 @@
+<div class="bills-container">
+  <!-- Header -->
+  <section class="bills-header glass-card">
+    <div class="header-content">
+      <h2>Gestion des Factures</h2>
+      <p>Suivez et gérez les factures des patients en temps réel.</p>
+    </div>
+    <button class="btn-primary">+ Ajouter une Facture</button>
+  </section>
+
+  <!-- Filtres -->
+  <section class="filters-section glass-card">
+    <div class="filter-row">
+      <!-- Barre de recherche -->
+      <div class="filter-group">
+        <label>Rechercher</label>
+        <input type="text" placeholder="Nom du patient, ID..." [(ngModel)]="searchQuery" />
+      </div>
+
+      <!-- Filtre par statut -->
+      <div class="filter-group">
+        <label>Statut</label>
+        <select [(ngModel)]="selectedStatus">
+          <option value="">Tous les statuts</option>
+          <option value="paid">Payé</option>
+          <option value="pending">En attente</option>
+          <option value="overdue">Impayé</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Liste des factures sous forme de tableau -->
+  <section class="invoices-table glass-card">
+    <table class="invoice-list">
+      <thead>
+        <tr>
+          <th>#ID</th>
+          <th>Patient</th>
+          <th>Date</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invoice of filteredInvoices">
+          <td>{{ invoice.id }}</td>
+          <td>{{ invoice.patientName }}</td>
+          <td>{{ invoice.date | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ invoice.amount | currency: 'EUR' }}</td>
+          <td><span class="status-badge" [class]="getStatusClass(invoice.status)">{{ invoice.status }}</span></td>
+          <td>{{ invoice.description }}</td>
+          <td>
+            <button class="btn-action btn-edit" title="Modifier"><i class="fas fa-pencil-alt"></i></button>
+            <button class="btn-action btn-delete" title="Supprimer"><i class="fas fa-trash-alt"></i></button>
+            <button class="btn-action btn-view" title="Voir la facture"><i class="fas fa-eye"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -1,0 +1,154 @@
+<div class="dashboard-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Bienvenue dans votre Espace Santé</h1>
+      <p>Suivez vos rendez-vous, patients et statistiques en temps réel.</p>
+      <button class="btn-primary">+ Nouveau RDV</button>
+    </div>
+  </section>
+
+  <!-- Stats Grid -->
+  <section class="stats-grid">
+    <div class="stat-card glass">
+      <div class="icon-bg blue"><i class="fas fa-calendar-day"></i></div>
+      <div class="info">
+        <h4>Rendez-vous aujourd'hui</h4>
+        <p class="number">8</p>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="icon-bg green"><i class="fas fa-users"></i></div>
+      <div class="info">
+        <h4>Patients présents</h4>
+        <p class="number">3</p>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="icon-bg orange"><i class="fas fa-clock"></i></div>
+      <div class="info">
+        <h4>En retard</h4>
+        <p class="number">1</p>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="icon-bg purple"><i class="fas fa-envelope-open-text"></i></div>
+      <div class="info">
+        <h4>Rappels envoyés</h4>
+        <p class="number">5</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-grid">
+    <!-- Calendar -->
+    <section class="calendar-section card-shadow">
+      <div class="section-header">
+        <h3>Calendrier des RDV</h3>
+        <button class="btn-outline btn-sm">+ Ajouter</button>
+      </div>
+      <div class="calendar-placeholder">
+        <p>Aucun événement pour cette semaine</p>
+      </div>
+    </section>
+
+    <!-- Appointments List -->
+    <section class="appointments-section card-shadow">
+      <div class="section-header">
+        <h3>Prochains Rendez-vous</h3>
+        <button class="btn-outline btn-sm">Voir tout</button>
+      </div>
+      <ul class="appointments-list">
+        <li *ngFor="let appointment of calendarEvents">
+          <img [src]="appointment.photo" alt="{{ appointment.title }}" class="doctor-photo" (error)="onImageError($event)" />
+          <span class="time">{{ appointment.time }}</span>
+          <span class="patient">{{ appointment.title }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Chart -->
+    <section class="chart-section card-shadow">
+      <div class="section-header">
+        <h3>Statistiques des RDV</h3>
+        <select class="filter-select">
+          <option>Semaine</option>
+          <option selected>Mois</option>
+          <option>Année</option>
+        </select>
+      </div>
+      <div class="chart-container">
+        <canvas id="appointments-chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Weekly Overview -->
+    <section class="card card-shadow">
+      <div class="section-header">
+        <h3>WEEKLY OVERVIEW</h3>
+        <span class="date-range">May 2 - May 8</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="weekly-overview-chart"></canvas>
+      </div>
+
+      <!-- Statistiques additionnelles -->
+      <div class="stats-section">
+        <div class="stat-card-mini">
+          <p>TOTAL APPOINTMENTS</p>
+          <h4>32</h4>
+          <span class="change-indicator up">↑ 8%</span>
+        </div>
+        <div class="stat-card-mini">
+          <p>OPEN SLOTS</p>
+          <h4>5</h4>
+          <span class="change-indicator down">↓ 2%</span>
+        </div>
+        <div class="stat-card-mini">
+          <p>FOLLOW-UPS</p>
+          <h4>7</h4>
+          <span class="change-indicator neutral">→ 0%</span>
+        </div>
+        <div class="stat-card-mini">
+          <p>NEW PATIENTS</p>
+          <h4>6</h4>
+          <span class="change-indicator up">↑ 12%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Patient Demographics Donut Chart -->
+    <section class="card card-shadow">
+      <div class="card-header">
+        <h3>PATIENT DEMOGRAPHICS <span class="badge bg-primary">1,248 Total</span></h3>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="gender-distribution-chart"></canvas>
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="dot" style="background-color: #3b82f6;"></span> Women (40%) - 499
+          </div>
+          <div class="legend-item">
+            <span class="dot" style="background-color: #f59e0b;"></span> Men (60%) - 749
+          </div>
+        </div>
+        <a href="#" class="btn btn-sm btn-outline">View Demographics</a>
+      </div>
+    </section>
+
+    <!-- Age Distribution Bar Chart -->
+    <section class="card card-shadow">
+      <div class="card-header">
+        <h3>AGE DISTRIBUTION</h3>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="age-distribution-chart"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

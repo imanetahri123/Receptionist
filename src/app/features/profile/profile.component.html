@@ -1,0 +1,104 @@
+<div *ngIf="user; else loading">
+  <div class="profile-container">
+    <!-- Section principale -->
+    <section class="profile-overview glass-card">
+      <div class="profile-header">
+        <h2>Mon Profil</h2>
+        <p>Gérez vos informations personnelles ici.</p>
+      </div>
+
+      <div class="profile-main">
+        <div class="profile-photo">
+          <img [src]="user.photo" alt="Photo de {{ user.name }}" />
+          <button class="btn-edit-photo" (click)="openEditModal()">
+            <i class="fas fa-camera"></i> Changer la photo
+          </button>
+        </div>
+
+        <div class="profile-details">
+          <div class="detail-group">
+            <label>Nom complet</label>
+            <input type="text" [value]="user.name" disabled />
+          </div>
+          <div class="detail-group">
+            <label>Email</label>
+            <input type="email" [value]="user.email" disabled />
+          </div>
+          <div class="detail-group">
+            <label>Téléphone</label>
+            <input type="tel" [value]="user.phone" disabled />
+          </div>
+          <div class="detail-group">
+            <label>Rôle</label>
+            <input type="text" [value]="user.role" disabled />
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-action btn-edit" (click)="openEditModal()">Modifier les informations</button>
+        <button class="btn-action btn-change-password">Changer le mot de passe</button>
+      </div>
+    </section>
+
+    <!-- Informations supplémentaires -->
+    <section class="profile-additional">
+      <div class="additional-card glass-card">
+        <h3>À propos</h3>
+        <p>
+          Vous travaillez dans l'établissement médical depuis 
+          {{ user.joinDate | date: 'dd/MM/yyyy' }}.
+        </p>
+      </div>
+
+      <div class="additional-card glass-card">
+        <h3>Statistiques</h3>
+        <ul>
+          <li><i class="fas fa-calendar-check"></i> Rendez-vous gérés : {{ user.stats?.appointments || 0 }}</li>
+          <li><i class="fas fa-user-md"></i> Médecins suivis : {{ user.stats?.doctors || 0 }}</li>
+          <li><i class="fas fa-file-invoice-dollar"></i> Factures traitées : {{ user.stats?.bills || 0 }}</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p>Chargement des informations en cours...</p>
+</ng-template>
+
+<!-- ✅ Modale d’édition -->
+<ng-template #editModal *ngIf="isEditing">
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Modifier vos informations personnelles</h3>
+
+      <form (ngSubmit)="saveChanges()">
+        <div class="form-group">
+          <label>Nom complet</label>
+          <input type="text" [(ngModel)]="editedUser.name" name="name" required />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="editedUser.email" name="email" required />
+        </div>
+
+        <div class="form-group">
+          <label>Téléphone</label>
+          <input type="tel" [(ngModel)]="editedUser.phone" name="phone" required />
+        </div>
+
+        <div class="form-group">
+          <label>Rôle</label>
+          <input type="text" [value]="editedUser.role" disabled />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="closeEditModal()" class="btn-cancel">Annuler</button>
+          <button type="submit" class="btn-save">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>

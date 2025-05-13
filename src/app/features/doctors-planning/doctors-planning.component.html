@@ -1,0 +1,59 @@
+<div class="planning-container">
+  <!-- Header -->
+  <section class="planning-header glass-card">
+    <div class="header-content">
+      <h2>Gestion du Planning Médical</h2>
+      <p>Organisez les horaires des médecins avec précision.</p>
+    </div>
+    <button class="btn-primary">+ Nouvel Événement</button>
+  </section>
+
+  <!-- Filtres -->
+  <section class="filters-section glass-card">
+    <div class="filter-row">
+      <!-- Filtre Médecin -->
+      <div class="filter-group">
+        <label>Médecin</label>
+        <select [(ngModel)]="selectedDoctor" class="input-select">
+          <option value="all">Tous les Médecins</option>
+          <option value="dupont">Dr. Dupont</option>
+          <option value="leger">Dr. Léger</option>
+          <option value="savin">Dr. Savin</option>
+        </select>
+      </div>
+
+      <!-- Filtre Vue -->
+      <div class="filter-group">
+        <label>Vue</label>
+        <select [(ngModel)]="selectedView" class="input-select">
+          <option value="dayGridMonth">Mois</option>
+          <option value="timeGridWeek">Semaine</option>
+          <option value="timeGridDay">Jour</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contrôles + Calendrier -->
+  <section class="calendar-controls glass-card">
+    <div class="calendar-toolbar">
+      <div class="toolbar-left">
+        <button class="btn-control" (click)="prevMonth()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="current-date">{{ currentViewDate }}</span>
+        <button class="btn-control" (click)="nextMonth()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      <div class="toolbar-right">
+        <button class="view-btn" [class.active]="selectedView === 'dayGridMonth'" (click)="changeView('dayGridMonth')">Mois</button>
+        <button class="view-btn" [class.active]="selectedView === 'timeGridWeek'" (click)="changeView('timeGridWeek')">Semaine</button>
+        <button class="view-btn" [class.active]="selectedView === 'timeGridDay'" (click)="changeView('timeGridDay')">Jour</button>
+      </div>
+    </div>
+
+    <!-- Calendrier FullCalendar -->
+    <div id="calendar" class="calendar glass-card"></div>
+  </section>
+</div>

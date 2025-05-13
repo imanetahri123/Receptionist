@@ -1,0 +1,225 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter :wght@400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ');
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right bottom, #f5f7fa, #c3cfe2);
+}
+
+.bills-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+}
+
+/* Header Premium */
+.bills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: black;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+.bills-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  transform: rotate(25deg);
+  transition: transform 0.5s ease;
+}
+.bills-header:hover::before {
+  transform: rotate(30deg);
+}
+.header-content h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.header-content p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.btn-primary {
+  background-color: white;
+  color: #4F46E5;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+.btn-primary:hover {
+  background-color: #bfdbfe;
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.glass-card:hover {
+  transform: translateY(-3px);
+  background-color: #f9fafb;
+}
+
+/* Section filtre */
+.filters-section {
+  margin-bottom: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.filter-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #f9fafb;
+  transition: all 0.3s ease;
+}
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Tableau de factures */
+.invoice-list {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.invoice-list thead tr {
+  background: #f9fafb;
+  font-size: 0.9rem;
+  text-align: left;
+  color: #4b5563;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.invoice-list th {
+  padding: 12px 16px;
+}
+
+.invoice-list tbody {
+  font-size: 0.95rem;
+}
+
+.invoice-list td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  color: #374151;
+}
+
+.invoice-list tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.invoice-list tr:hover {
+  background-color: #eaf2ff;
+  transition: all 0.3s ease;
+}
+
+/* Badges de statut */
+.status-badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.status-badge.status-paid {
+  background-color: #dcfce7;
+  color: #10b981;
+}
+.status-badge.status-pending {
+  background-color: #fef9c3;
+  color: #d97706;
+}
+.status-badge.status-overdue {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+/* Boutons d'action */
+.btn-action {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-action i {
+  font-size: 1.1rem;
+}
+
+.btn-edit {
+  color: #3b82f6;
+}
+.btn-edit:hover {
+  background: #e0e7ff;
+}
+
+.btn-delete {
+  color: #ef4444;
+}
+.btn-delete:hover {
+  background: #fee2e2;
+}
+
+.btn-view {
+  color: #10b981;
+}
+.btn-view:hover {
+  background: #dcfce7;
+}

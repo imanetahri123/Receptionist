@@ -1,0 +1,73 @@
+<div class="appointments-container">
+  <!-- Header -->
+  <section class="appointments-header glass-card">
+    <div class="header-content">
+      <h2>Gestion des Rendez-vous</h2>
+      <p>Organisez et suivez vos RDV facilement.</p>
+    </div>
+    <button class="btn-primary">+ Nouveau RDV</button>
+  </section>
+
+  <!-- Filtres -->
+  <section class="filters-section glass-card">
+    <div class="filter-row">
+      <!-- Date -->
+      <div class="filter-group">
+        <label for="date-filter">Date :</label>
+        <input type="date" id="date-filter" [(ngModel)]="selectedDate" />
+      </div>
+
+      <!-- Statut -->
+      <div class="filter-group">
+        <label for="status-filter">Statut :</label>
+        <select id="status-filter" [(ngModel)]="selectedStatus">
+          <option value="">Tous</option>
+          <option value="upcoming">À venir</option>
+          <option value="completed">Terminé</option>
+          <option value="canceled">Annulé</option>
+        </select>
+      </div>
+
+      <!-- Recherche -->
+      <div class="filter-group">
+        <label for="search">Rechercher</label>
+        <input type="text" id="search" placeholder="Nom du patient..." [(ngModel)]="searchQuery" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Liste des rendez-vous -->
+  <section class="appointments-table glass-card">
+    <table class="appointment-table">
+      <thead>
+        <tr>
+          <th>Date & Heure</th>
+          <th>Patient</th>
+          <th>Type</th>
+          <th>Statut</th>
+          <th>Rappel</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appointment of filteredAppointments"
+            [class.completed]="appointment.status === 'completed'"
+            [class.canceled]="appointment.status === 'canceled'"
+            class="appointment-row">
+          <td>{{ appointment.time }}</td>
+          <td>{{ appointment.patient }}</td>
+          <td>{{ appointment.type || 'Consultation' }}</td>
+          <td><span class="status-badge" [class]="getStatusClass(appointment.status)">
+                {{ appointment.statusLabel }}
+              </span></td>
+          <td>{{ appointment.reminder }}</td>
+          <td>
+            <button class="btn-action btn-edit" title="Modifier"><i class="fas fa-pencil-alt"></i></button>
+            <button class="btn-action btn-delete" title="Supprimer"><i class="fas fa-trash-alt"></i></button>
+            <button class="btn-action btn-view" title="Détails"><i class="fas fa-eye"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

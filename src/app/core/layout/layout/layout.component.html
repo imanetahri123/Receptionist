@@ -1,0 +1,63 @@
+<div class="layout">
+  <aside class="sidebar">
+    <!-- Logo + Info utilisateur -->
+    <div class="logo">
+      <div class="receptionist-photo">
+        <img src="assets/images/pers.jpg" alt="Réceptionniste - Omar Bennani" />
+      </div>
+      <div class="receptionist-info">
+        <div class="name">Omar Bennani</div>
+        <div class="email">Omar.reception&#64;asio.com</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <a routerLink="/dashboard" routerLinkActive="active">
+        <span class="material-icons">dashboard</span> Dashboard
+      </a>
+      <a routerLink="/appointments" routerLinkActive="active">
+        <span class="material-icons">event</span> Rendez-vous
+      </a>
+      <a routerLink="/doctors-planning" routerLinkActive="active">
+        <span class="material-icons">calendar_month</span> Planning
+      </a>
+      <a routerLink="/medical-record" routerLinkActive="active">
+        <span class="material-icons">medical_services</span> Patients
+      </a>
+      <a routerLink="/bills" routerLinkActive="active">
+        <span class="material-icons">receipt_long</span> Factures
+      </a>
+      <a routerLink="/reminders" routerLinkActive="active">
+        <span class="material-icons">alarm</span> Rappels
+      </a>
+      <a routerLink="/profile" routerLinkActive="active">
+        <span class="material-icons">person</span> Profil
+      </a>
+    </nav>
+
+    <!-- Déconnexion -->
+    <div class="logout">
+      <a href="javascript:void(0);" (click)="logout()">
+        <span class="material-icons">logout</span> Déconnexion
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="topbar wow-header">
+      <div class="welcome-msg">
+        Bienvenue, <span class="username">Omar</span>
+      </div>
+      <div class="clinic-name">
+        <span class="material-icons">local_hospital</span>
+        <span>Réception ASIO Clinic</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
