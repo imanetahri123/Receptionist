@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { AppointmentService } from '../../services/appointment.service';
 
 @Component({
   selector: 'app-appointments',
-  standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './appointments.component.html',
   styleUrls: ['./appointments.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class AppointmentsComponent implements OnInit {
   searchQuery = '';
@@ -17,7 +15,21 @@ export class AppointmentsComponent implements OnInit {
   selectedDate = '';
   appointments: any[] = [];
 
-  constructor(private appointmentService: AppointmentService) {}
+  editingAppointment: any = null;
+  selectedAppointment: any = null;
+
+  // Formulaire d’ajout
+  showAddModal: boolean = false;
+  newAppointment: any = {
+    id: null,
+    patient: '',
+    time: '',
+    type: '',
+    status: 'upcoming',
+    reminder: ''
+  };
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loadAppointments();
@@ -29,37 +41,110 @@ export class AppointmentsComponent implements OnInit {
     if (this.searchQuery) filters.patient = this.searchQuery;
     if (this.selectedDate) filters.date = this.selectedDate;
 
-    this.appointmentService.searchAppointments(filters).subscribe(
-      (response: any) => {
-        // ✅ Extraction de .data si ton API retourne { success: true, data: [...] }
-        this.appointments = Array.isArray(response.data) ? response.data : [];
+    // Simule un chargement depuis l'API
+    this.appointments = [
+      {
+        id: 1,
+        time: '10:00 AM',
+        patient: 'Salwa Slimani',
+        type: 'Consultation',
+        status: 'upcoming',
+        reminder: 'Rappel envoyé'
       },
-      (error) => {
-        console.error('Erreur lors du chargement des RDV', error);
-        this.appointments = [];
+      {
+        id: 2,
+        time: '11:30 AM',
+        patient: 'Imane Tahri',
+        type: 'Suivi',
+        status: 'completed',
+        reminder: ''
       }
-    );
+    ];
   }
 
-  // ✅ Getter utilisé dans le template HTML
   get filteredAppointments() {
     return this.appointments.filter((app: any) => {
-      const matchesSearch = app.patient?.toLowerCase().includes(this.searchQuery.toLowerCase()) ?? true;
-      const matchesStatus = !this.selectedStatus || app.status === this.selectedStatus;
+      const matchesSearch =
+        !this.searchQuery ||
+        app.patient?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        ('' + app.id).toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus =
+        !this.selectedStatus || app.status === this.selectedStatus;
+
       return matchesSearch && matchesStatus;
     });
   }
 
-  getStatusClass(status: string): string {
+  getLabelFromStatus(status: string): string {
     switch (status) {
-      case 'upcoming':
-        return 'status-badge status-upcoming';
-      case 'completed':
-        return 'status-badge status-completed';
-      case 'canceled':
-        return 'status-badge status-canceled';
-      default:
-        return 'status-badge';
+      case 'upcoming': return 'À venir';
+      case 'completed': return 'Terminé';
+      case 'canceled': return 'Annulé';
+      default: return 'Inconnu';
     }
+  }
+
+  openEditModal(appointment: any): void {
+    this.editingAppointment = { ...appointment };
+  }
+
+  closeEditModal(): void {
+    this.editingAppointment = null;
+  }
+
+  saveUpdatedAppointment(): void {
+    if (!this.editingAppointment) return;
+
+    const index = this.appointments.findIndex(a => a.id === this.editingAppointment.id);
+    if (index !== -1) {
+      this.appointments[index] = { ...this.editingAppointment };
+    }
+    this.closeEditModal();
+    alert('RDV mis à jour');
+  }
+
+  deleteAppointment(appointment: any): void {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer ${appointment.patient} ?`)) {
+      this.appointments = this.appointments.filter(a => a.id !== appointment.id);
+      alert('RDV supprimé');
+    }
+  }
+
+  viewAppointmentDetails(appointment: any): void {
+    this.selectedAppointment = { ...appointment };
+  }
+
+  closeDetailsModal(): void {
+    this.selectedAppointment = null;
+  }
+
+  openAddModal(): void {
+    this.showAddModal = true;
+    this.newAppointment = {
+      id: null,
+      patient: '',
+      time: '',
+      type: '',
+      status: 'upcoming',
+      reminder: ''
+    };
+  }
+
+  closeAddModal(): void {
+    this.showAddModal = false;
+  }
+
+  saveNewAppointment(): void {
+    if (!this.newAppointment.patient || !this.newAppointment.time) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    const newId = this.appointments.length ? Math.max(...this.appointments.map(a => a.id)) + 1 : 1;
+    this.newAppointment.id = newId;
+    this.appointments.push({ ...this.newAppointment });
+    this.closeAddModal();
+    alert('Nouveau RDV ajouté');
   }
 }

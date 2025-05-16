@@ -1,26 +1,36 @@
-<div class="appointments-container">
-  <!-- Header -->
-  <section class="appointments-header glass-card">
-    <div class="header-content">
-      <h2>Gestion des Rendez-vous</h2>
-      <p>Organisez et suivez vos RDV facilement.</p>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  <!-- Header Section -->
+  <section class="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mb-6 flex justify-between items-center transform transition-all hover:shadow-xl duration-300">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Gestion des Rendez-vous</h2>
+      <p class="text-sm text-gray-500 mt-1">Organisez et suivez vos RDV facilement.</p>
     </div>
-    <button class="btn-primary">+ Nouveau RDV</button>
+    <button (click)="openAddModal()" 
+            class="btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-5 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+      + Nouveau RDV
+    </button>
   </section>
 
   <!-- Filtres -->
-  <section class="filters-section glass-card">
-    <div class="filter-row">
+  <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-6 glass-effect">
+    <div class="filter-row grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Date -->
       <div class="filter-group">
-        <label for="date-filter">Date :</label>
-        <input type="date" id="date-filter" [(ngModel)]="selectedDate" />
+        <label for="date-filter" class="block text-sm font-medium text-gray-700 mb-1">Date :</label>
+        <input type="date"
+               id="date-filter"
+               [(ngModel)]="selectedDate"
+               (input)="loadAppointments()"
+               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
 
       <!-- Statut -->
       <div class="filter-group">
-        <label for="status-filter">Statut :</label>
-        <select id="status-filter" [(ngModel)]="selectedStatus">
+        <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">Statut :</label>
+        <select id="status-filter"
+                [(ngModel)]="selectedStatus"
+                (change)="loadAppointments()"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">Tous</option>
           <option value="upcoming">À venir</option>
           <option value="completed">Terminé</option>
@@ -30,44 +40,198 @@
 
       <!-- Recherche -->
       <div class="filter-group">
-        <label for="search">Rechercher</label>
-        <input type="text" id="search" placeholder="Nom du patient..." [(ngModel)]="searchQuery" />
+        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+        <input type="text"
+               id="search"
+               placeholder="Nom du patient..."
+               [(ngModel)]="searchQuery"
+               (input)="loadAppointments()"
+               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
     </div>
   </section>
 
   <!-- Liste des rendez-vous -->
-  <section class="appointments-table glass-card">
-    <table class="appointment-table">
-      <thead>
-        <tr>
-          <th>Date & Heure</th>
-          <th>Patient</th>
-          <th>Type</th>
-          <th>Statut</th>
-          <th>Rappel</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let appointment of filteredAppointments"
-            [class.completed]="appointment.status === 'completed'"
-            [class.canceled]="appointment.status === 'canceled'"
-            class="appointment-row">
-          <td>{{ appointment.time }}</td>
-          <td>{{ appointment.patient }}</td>
-          <td>{{ appointment.type || 'Consultation' }}</td>
-          <td><span class="status-badge" [class]="getStatusClass(appointment.status)">
-                {{ appointment.statusLabel }}
-              </span></td>
-          <td>{{ appointment.reminder }}</td>
-          <td>
-            <button class="btn-action btn-edit" title="Modifier"><i class="fas fa-pencil-alt"></i></button>
-            <button class="btn-action btn-delete" title="Supprimer"><i class="fas fa-trash-alt"></i></button>
-            <button class="btn-action btn-view" title="Détails"><i class="fas fa-eye"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <section class="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr class="text-sm text-gray-600 uppercase tracking-wider">
+            <th scope="col" class="px-6 py-3 font-medium text-left">Date & Heure</th>
+            <th scope="col" class="px-6 py-3 font-medium text-left">Patient</th>
+            <th scope="col" class="px-6 py-3 font-medium text-left">Type</th>
+            <th scope="col" class="px-6 py-3 font-medium text-left">Statut</th>
+            <th scope="col" class="px-6 py-3 font-medium text-left">Rappel</th>
+            <th scope="col" class="px-6 py-3 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let appointment of filteredAppointments"
+              [class.bg-green-50]="appointment.status === 'completed'"
+              [class.bg-red-50]="appointment.status === 'canceled'"
+              [class.bg-blue-50]="appointment.status === 'upcoming'"
+              class="hover:bg-gray-50 group transition-colors duration-200 cursor-pointer">
+
+            <!-- Date & Heure -->
+            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ appointment.time }}</td>
+
+            <!-- Patient -->
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ appointment.patient }}</td>
+
+            <!-- Type -->
+            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ appointment.type || 'Consultation' }}</td>
+
+            <!-- Statut -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                    [class.bg-blue-100.text-blue-700]="appointment.status === 'upcoming'"
+                    [class.bg-green-100.text-green-700]="appointment.status === 'completed'"
+                    [class.bg-red-100.text-red-700]="appointment.status === 'canceled'">
+                {{ getLabelFromStatus(appointment.status) }}
+              </span>
+            </td>
+
+            <!-- Rappel -->
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ appointment.reminder || 'Non programmé' }}</td>
+
+            <!-- Actions -->
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2">
+              <button title="Modifier" 
+                      (click)="openEditModal(appointment)"
+                      class="btn-action btn-edit inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-5 1-1 5L2.3 18.3a2.122 2.122 0 0 1-.3-3.1L11 4z"></path>
+                </svg>
+              </button>
+              <button title="Supprimer" 
+                      (click)="deleteAppointment(appointment)"
+                      class="btn-action btn-delete inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="9" y1="10" x2="9" y2="18"></line>
+                  <line x1="15" y1="10" x2="15" y2="18"></line>
+                </svg>
+              </button>
+              <button title="Détails" 
+                      (click)="viewAppointmentDetails(appointment)"
+                      class="btn-action btn-view inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-800 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
+
+  <!-- Modale : Détails du RDV -->
+  <div *ngIf="selectedAppointment" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform scale-in">
+      <h3 class="text-lg font-bold mb-4">Détails du Rendez-vous</h3>
+      <div class="space-y-3 text-sm">
+        <p><strong>Patient :</strong> {{ selectedAppointment.patient }}</p>
+        <p><strong>Date & Heure :</strong> {{ selectedAppointment.time }}</p>
+        <p><strong>Type :</strong> {{ selectedAppointment.type || 'Consultation' }}</p>
+        <p><strong>Statut :</strong> {{ getLabelFromStatus(selectedAppointment.status) }}</p>
+        <p><strong>Rappel :</strong> {{ selectedAppointment.reminder || 'Aucun rappel' }}</p>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button (click)="closeDetailsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale : Modifier RDV -->
+  <div *ngIf="editingAppointment" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform scale-in">
+      <h3 class="text-lg font-bold mb-4">Modifier le Rendez-vous</h3>
+      <form (ngSubmit)="saveUpdatedAppointment()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+          <input type="text" [(ngModel)]="editingAppointment.patient" name="patient" required
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date & Heure</label>
+          <input type="datetime-local" [(ngModel)]="editingAppointment.time" name="time" required
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <input type="text" [(ngModel)]="editingAppointment.type" name="type"
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+          <select [(ngModel)]="editingAppointment.status" name="status"
+                  class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="upcoming">À venir</option>
+            <option value="completed">Terminé</option>
+            <option value="canceled">Annulé</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-3 mt-4">
+          <button type="button" (click)="closeEditModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale : Ajouter RDV -->
+  <div *ngIf="showAddModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform scale-in">
+      <h3 class="text-lg font-bold mb-4">Ajouter un Rendez-vous</h3>
+      <form (ngSubmit)="saveNewAppointment()" class="space-y-4">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+          <input type="text" [(ngModel)]="newAppointment.patient" name="newPatient" required
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date & Heure</label>
+          <input type="datetime-local" [(ngModel)]="newAppointment.time" name="newTime" required
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <input type="text" [(ngModel)]="newAppointment.type" name="newType"
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+          <select [(ngModel)]="newAppointment.status" name="newStatus"
+                  class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="upcoming">À venir</option>
+            <option value="completed">Terminé</option>
+            <option value="canceled">Annulé</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Rappel</label>
+          <input type="text" [(ngModel)]="newAppointment.reminder" name="newReminder"
+                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="modal-actions flex justify-end gap-3 mt-4">
+          <button type="button" (click)="closeAddModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+            Créer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

@@ -1,1 +1,382 @@
-/* You can add global styles to this file, and also import other style files */
+/* Import des polices */
+@import url('https://fonts.googleapis.com/css2?family=Inter :wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
+
+/* Tailwind CSS Base & Utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables globales via classes */
+@layer base {
+  html {
+    @apply bg-background text-text font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  body {
+    @apply min-h-screen leading-relaxed tracking-wide bg-gray-100;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display text-text-dark font-bold;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  p {
+    @apply text-text mb-4;
+  }
+
+  a {
+    @apply text-primary hover:text-primary-dark transition-colors duration-300;
+  }
+
+  button {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 rounded-lg;
+  }
+
+  /* Responsive Headings */
+  h1 {
+    @apply text-dashboard-title;
+  }
+
+  h2 {
+    @apply text-section-header;
+  }
+
+  h3 {
+    @apply text-card-title;
+  }
+}
+
+/* Classes personnalisées réutilisables */
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white;
+  }
+
+  .btn-secondary {
+    @apply bg-white border border-primary text-primary hover:bg-gray-50;
+  }
+
+  .btn-accent {
+    @apply bg-accent hover:bg-accent-dark text-white;
+  }
+
+  .btn-urgent {
+    @apply bg-status-urgent hover:bg-status-urgent/90 text-white;
+  }
+
+  .btn-outline {
+    @apply border border-border text-text hover:bg-hover;
+  }
+
+  .card {
+    @apply bg-card rounded-xl shadow-md border border-border p-6 transition-shadow duration-300 hover:shadow-xl;
+  }
+
+  .glass-effect {
+    @apply bg-white/70 backdrop-blur-sm border border-white/30 shadow-lg rounded-xl;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize;
+  }
+
+  .status-success {
+    @apply bg-status-success/10 text-status-success;
+  }
+
+  .status-warning {
+    @apply bg-status-warning/10 text-status-warning;
+  }
+
+  .status-urgent {
+    @apply bg-status-urgent/10 text-status-urgent;
+  }
+
+  .status-info {
+    @apply bg-status-info/10 text-status-info;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 text-text font-medium rounded-xl hover:bg-primary-light hover:text-white transition-all duration-200 shadow-sm hover:shadow-md;
+  }
+
+  .sidebar-link.active {
+    @apply bg-primary-dark text-white scale-105 shadow-lg;
+  }
+
+  .form-control {
+    @apply mb-4;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-text mb-1;
+  }
+
+  .form-input,
+  .form-select {
+    @apply w-full border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary;
+  }
+
+  .form-error {
+    @apply text-status-urgent text-xs mt-1;
+  }
+
+  .table {
+    @apply w-full table-auto border-collapse text-left;
+  }
+
+  .table thead th {
+    @apply bg-gray-50 text-text-dark font-semibold uppercase text-xs py-3 px-4 rounded-t-lg;
+  }
+
+  .table tbody tr {
+    @apply border-b border-border hover:bg-gray-50 transition-colors;
+  }
+
+  .table tbody td {
+    @apply py-3 px-4 text-sm text-text;
+  }
+
+  .alert {
+    @apply p-4 mb-4 text-sm rounded-md;
+  }
+
+  .alert-success {
+    @apply bg-green-50 text-green-800;
+  }
+
+  .alert-warning {
+    @apply bg-yellow-50 text-yellow-800;
+  }
+
+  .alert-danger {
+    @apply bg-red-50 text-red-800;
+  }
+
+  .spinner {
+    @apply animate-spin h-5 w-5 text-primary;
+  }
+
+  .fade-enter {
+    @apply opacity-0 transform translate-y-2;
+  }
+
+  .fade-enter-active {
+    @apply opacity-100 transform translate-y-0 transition-all duration-300 ease-in-out;
+  }
+
+  header {
+    @apply bg-white/90 border-b border-border shadow-lg sticky top-0 z-10 backdrop-blur-sm;
+  }
+
+  header .text-text-dark {
+    @apply tracking-wide;
+  }
+
+  header .group svg {
+    @apply transition-transform duration-500;
+  }
+
+  header .group:hover svg {
+    @apply scale-110 text-[#3EB5BD];
+  }
+
+  .group img {
+    @apply transition-transform duration-300 ease-in-out;
+  }
+
+  .group:hover img {
+    @apply scale-110 shadow-2xl;
+  }
+
+  .group .absolute {
+    @apply opacity-0 transition-opacity duration-300;
+  }
+
+  .group:hover .absolute {
+    @apply opacity-50 blur-sm;
+  }
+
+  .welcome-card {
+    @apply glass-effect p-6 mb-6 border border-gray-100 transform transition-all duration-300 hover:shadow-xl;
+  }
+
+  .welcome-card h2 {
+    @apply text-xl font-semibold text-text;
+  }
+
+  .welcome-card span.username {
+    @apply text-primary font-bold;
+  }
+
+  .welcome-card p {
+    @apply text-sm text-text-light mt-1;
+  }
+
+  .content {
+    @apply glass-effect p-6 border border-gray-100;
+  }
+
+  .logout-link {
+    @apply flex items-center gap-2 px-4 py-2 text-text rounded-xl hover:bg-gray-100 hover:text-primary transition-all duration-200;
+  }
+
+  .logout-link svg {
+    @apply transition-transform duration-200;
+  }
+
+  .logout-link:hover svg {
+    @apply scale-110 rotate-6;
+  }
+
+  .icon-scale {
+    @apply transition-transform duration-300 group-hover:scale-110;
+  }
+
+  .sidebar-link:hover {
+    @apply bg-primary-light text-white;
+  }
+
+  .sidebar-link.active {
+    @apply bg-primary-dark text-white scale-105 shadow-lg;
+  }
+
+  .badge {
+    @apply inline-block px-2 py-1 text-white text-xs font-medium rounded-full;
+  }
+
+  .legend-item {
+    @apply flex items-center text-sm text-text-light;
+  }
+
+  .legend-item .dot {
+    @apply inline-block w-3 h-3 rounded-full mr-1;
+  }
+
+  .stat-card-mini {
+    @apply p-3 border border-border rounded-lg bg-gray-50;
+  }
+
+  .change-indicator {
+    @apply text-xs font-medium;
+  }
+
+  .change-indicator.up {
+    @apply text-green-500;
+  }
+
+  .change-indicator.down {
+    @apply text-red-500;
+  }
+
+  .change-indicator.neutral {
+    @apply text-gray-500;
+  }
+
+  .appointments-list li {
+    @apply flex items-center gap-3 p-3 border-b border-border last:border-b-0 hover:bg-gray-50 rounded-md transition-colors;
+  }
+
+  .appointments-list li:last-child {
+    @apply border-b-0;
+  }
+
+  .appointments-list .doctor-photo {
+    @apply w-10 h-10 rounded-full object-cover;
+  }
+
+  .appointments-list .time {
+    @apply text-xs text-text-light;
+  }
+
+  .appointments-list .patient {
+    @apply font-medium text-text-dark;
+  }
+
+  .section-header {
+    @apply flex justify-between items-center mb-4;
+  }
+
+  .section-header h3 {
+    @apply text-section-header text-text-dark font-semibold;
+  }
+
+  .filter-select {
+    @apply border border-border rounded-md px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary;
+  }
+
+  .chart-container {
+    @apply h-40;
+  }
+
+  .chart-container canvas {
+    @apply w-full h-full;
+  }
+
+  .date-range {
+    @apply text-xs text-text-light;
+  }
+
+  .icon-bg {
+    @apply flex items-center justify-center w-12 h-12 rounded-lg mr-4;
+  }
+
+  .blue {
+    @apply bg-blue-100 text-blue-600;
+  }
+
+  .green {
+    @apply bg-green-100 text-green-600;
+  }
+
+  .orange {
+    @apply bg-orange-100 text-orange-600;
+  }
+
+  .purple {
+    @apply bg-purple-100 text-purple-600;
+  }
+
+  .stat-card {
+    @apply bg-white backdrop-filter backdrop-blur-sm border border-gray-200 shadow-md rounded-xl p-4 transition-transform duration-300 hover:scale-105;
+  }
+
+  .stat-card:hover {
+    @apply shadow-lg;
+  }
+
+  .stat-card h4 {
+    @apply text-sm text-text-light font-medium;
+  }
+
+  .stat-card .number {
+    @apply text-2xl font-semibold text-text-dark;
+  }
+
+  .stat-card-mini {
+    @apply p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors;
+  }
+
+  .stat-card-mini p {
+    @apply text-xs text-text-light;
+  }
+
+  .stat-card-mini h4 {
+    @apply font-bold text-text-dark;
+  }
+
+  .stat-card-mini .change-indicator {
+    @apply text-xs font-medium;
+  }
+}

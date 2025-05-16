@@ -1,153 +1,295 @@
-<div class="dashboard-container">
+<div class="p-6 space-y-6">
   <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1>Bienvenue dans votre Espace Santé</h1>
-      <p>Suivez vos rendez-vous, patients et statistiques en temps réel.</p>
-      <button class="btn-primary">+ Nouveau RDV</button>
+  <section class="relative bg-white border border-gray-200 rounded-xl shadow-md p-6 flex justify-between items-center">
+    <div class="welcome-message space-y-1">
+      <h1 class="text-xl md:text-2xl font-bold text-primary">Bienvenue dans votre Espace Santé</h1>
+      <p class="text-sm text-text-light">Dashboard de réception - Vue d'ensemble du cabinet</p>
+    </div>
+
+    <div class="buttons-group flex gap-3">
+      <button class="btn btn-outline px-4 py-2 rounded-lg border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        Nouveau RDV
+      </button>
+      <button class="btn btn-primary px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark font-semibold shadow-sm hover:shadow transition-all duration-300 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
+          <circle cx="12" cy="7" r="4"></circle>
+          <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+        </svg>
+        Nouveau Patient
+      </button>
     </div>
   </section>
 
-  <!-- Stats Grid -->
-  <section class="stats-grid">
-    <div class="stat-card glass">
-      <div class="icon-bg blue"><i class="fas fa-calendar-day"></i></div>
-      <div class="info">
-        <h4>Rendez-vous aujourd'hui</h4>
-        <p class="number">8</p>
+  <!-- Advanced Stats Section -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+    <!-- Stat Card - Rendez-vous aujourd'hui -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
+      <div class="bg-blue-500 text-white rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
       </div>
+      <div>
+        <p class="text-sm font-medium">Rendez-vous aujourd'hui</p>
+        <h3 class="text-2xl font-bold">12</h3>
+        <span class="text-xs text-green-500 font-medium">+8% augmentation</span>
+      </div>
+      <div class="border-l-4 border-blue-500 h-full ml-4"></div>
     </div>
-    <div class="stat-card glass">
-      <div class="icon-bg green"><i class="fas fa-users"></i></div>
-      <div class="info">
-        <h4>Patients présents</h4>
-        <p class="number">3</p>
+
+    <!-- Stat Card - Patients en attente -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
+      <div class="bg-yellow-500 text-white rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="6" x2="12" y2="12"></line>
+          <polyline points="12 12 16 16"></polyline>
+        </svg>
       </div>
+      <div>
+        <p class="text-sm font-medium">Patients en attente</p>
+        <h3 class="text-2xl font-bold">3</h3>
+        <span class="text-xs text-red-500 font-medium">-2% diminution</span>
+      </div>
+      <div class="border-l-4 border-yellow-500 h-full ml-4"></div>
     </div>
-    <div class="stat-card glass">
-      <div class="icon-bg orange"><i class="fas fa-clock"></i></div>
-      <div class="info">
-        <h4>En retard</h4>
-        <p class="number">1</p>
+
+    <!-- Stat Card - Statut du médecin -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
+      <div class="bg-green-500 text-white rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <circle cx="12" cy="7" r="4"></circle>
+          <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+        </svg>
       </div>
+      <div>
+        <p class="text-sm font-medium">Statut du médecin</p>
+        <h3 class="text-2xl font-bold">Disponible</h3>
+        <span class="bg-green-500 text-white px-2 py-1 rounded-md text-xs">En cabinet</span>
+      </div>
+      <div class="border-l-4 border-green-500 h-full ml-4"></div>
     </div>
-    <div class="stat-card glass">
-      <div class="icon-bg purple"><i class="fas fa-envelope-open-text"></i></div>
-      <div class="info">
-        <h4>Rappels envoyés</h4>
-        <p class="number">5</p>
+
+    <!-- Stat Card - Patients cette semaine -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
+      <div class="bg-purple-500 text-white rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <circle cx="12" cy="7" r="4"></circle>
+          <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+        </svg>
       </div>
+      <div>
+        <p class="text-sm font-medium">Patients cette semaine</p>
+        <h3 class="text-2xl font-bold">78</h3>
+        <span class="text-xs text-green-500 font-medium">+12% augmentation</span>
+      </div>
+      <div class="border-l-4 border-purple-500 h-full ml-4"></div>
     </div>
   </section>
 
-  <!-- Main Content -->
-  <main class="main-grid">
-    <!-- Calendar -->
-    <section class="calendar-section card-shadow">
-      <div class="section-header">
-        <h3>Calendrier des RDV</h3>
-        <button class="btn-outline btn-sm">+ Ajouter</button>
+  <!-- Planning du Jour -->
+  <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-section-header ont-semibold">Planning du jour - Dr. Kamal Berrada</h3>
+      <button class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200">
+        Voir tout
+      </button>
+    </div>
+
+    <!-- Liste des rendez-vous scrollable -->
+    <div class="overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+      <ul class="space-y-4">
+        <!-- Rendez-vous 1 -->
+        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="bg-blue-500 text-white rounded-full p-3">
+              <span class="text-sm font-medium">SM</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium">Salwa Slimani</p>
+              <span class="text-xs text-text-light">Consultation with Dr. Kamal Berrada</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <p class="text-sm font-medium">09:00</p>
+            <span class="bg-green-500 text-white px-2 py-1 rounded-md text-xs">Completed</span>
+          </div>
+        </li>
+
+        <!-- Rendez-vous 2 -->
+        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="bg-blue-500 text-white rounded-full p-3">
+              <span class="text-sm font-medium">IT</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium">Imane Tahri</p>
+              <span class="text-xs text-text-light">Suivi with Dr. Kamal Berrada</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <p class="text-sm font-medium">10:30</p>
+            <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs">Ongoing</span>
+          </div>
+        </li>
+
+        <!-- Rendez-vous 3 -->
+        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="bg-blue-500 text-white rounded-full p-3">
+              <span class="text-sm font-medium">SB</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium">Sana Barkouch</p>
+              <span class="text-xs text-text-light">Urgence with Dr. Kamal Berrada</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <p class="text-sm font-medium">11:45</p>
+            <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs">Upcoming</span>
+          </div>
+        </li>
+
+        <!-- Rendez-vous 4 -->
+        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="bg-blue-500 text-white rounded-full p-3">
+              <span class="text-sm font-medium">IP</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium">Isabelle Petit</p>
+              <span class="text-xs text-text-light">Consultation with Dr. Thomas Leclerc</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <p class="text-sm font-medium">14:00</p>
+            <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs">Upcoming</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Main Content Grid -->
+  <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Calendar Section -->
+    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-section-header ont-semibold">Calendrier des RDV</h3>
+        <button class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200">
+          + Ajouter
+        </button>
       </div>
-      <div class="calendar-placeholder">
+      <div class="calendar-placeholder text-center py-12 text-text-muted">
         <p>Aucun événement pour cette semaine</p>
       </div>
     </section>
 
     <!-- Appointments List -->
-    <section class="appointments-section card-shadow">
-      <div class="section-header">
-        <h3>Prochains Rendez-vous</h3>
-        <button class="btn-outline btn-sm">Voir tout</button>
+    <section class="lg:col-span-1 card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-section-header ont-semibold">Prochains Rendez-vous</h3>
+        <button class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200">
+          Voir tout
+        </button>
       </div>
-      <ul class="appointments-list">
-        <li *ngFor="let appointment of calendarEvents">
-          <img [src]="appointment.photo" alt="{{ appointment.title }}" class="doctor-photo" (error)="onImageError($event)" />
-          <span class="time">{{ appointment.time }}</span>
-          <span class="patient">{{ appointment.title }}</span>
+      <ul class="appointments-list space-y-4 mt-4">
+        <li *ngFor="let appointment of calendarEvents" class="flex items-center gap-3 p-3 border-b border-border last:border-b-0 hover:bg-gray-50 rounded-md transition-colors duration-200 cursor-pointer">
+          <img [src]="appointment.photo" alt="{{ appointment.title }}" class="w-10 h-10 rounded-full object-cover" (error)="onImageError($event)" />
+          <div>
+            <span class="block font-medium">{{ appointment.title }}</span>
+            <span class="text-xs text-text-light">{{ appointment.time }}</span>
+          </div>
         </li>
       </ul>
     </section>
 
-    <!-- Chart -->
-    <section class="chart-section card-shadow">
-      <div class="section-header">
-        <h3>Statistiques des RDV</h3>
-        <select class="filter-select">
+    <!-- Chart Section -->
+    <section class="lg:col-span-1 card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-section-header ont-semibold">Statistiques des RDV</h3>
+        <select class="filter-select border border-border rounded-md px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary">
           <option>Semaine</option>
           <option selected>Mois</option>
           <option>Année</option>
         </select>
       </div>
-      <div class="chart-container">
-        <canvas id="appointments-chart"></canvas>
+      <div class="chart-container h-40 flex items-center justify-center">
+        <canvas id="appointments-chart" class="w-full h-full"></canvas>
       </div>
     </section>
 
     <!-- Weekly Overview -->
-    <section class="card card-shadow">
-      <div class="section-header">
-        <h3>WEEKLY OVERVIEW</h3>
-        <span class="date-range">May 2 - May 8</span>
+    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-section-header ont-semibold">WEEKLY OVERVIEW</h3>
+        <span class="date-range text-xs text-text-muted">May 2 - May 8</span>
       </div>
-      <div class="chart-container">
-        <canvas id="weekly-overview-chart"></canvas>
+      <div class="chart-container h-40 mb-6 flex items-center justify-center">
+        <canvas id="weekly-overview-chart" class="w-full h-full"></canvas>
       </div>
-
-      <!-- Statistiques additionnelles -->
-      <div class="stats-section">
-        <div class="stat-card-mini">
-          <p>TOTAL APPOINTMENTS</p>
-          <h4>32</h4>
-          <span class="change-indicator up">↑ 8%</span>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
+          <p class="text-xs text-text-light">TOTAL APPOINTMENTS</p>
+          <h4 class="font-bold text-text-dark">32</h4>
+          <span class="change-indicator up text-green-500 text-xs">↑ 8%</span>
         </div>
-        <div class="stat-card-mini">
-          <p>OPEN SLOTS</p>
-          <h4>5</h4>
-          <span class="change-indicator down">↓ 2%</span>
+        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
+          <p class="text-xs text-text-light">OPEN SLOTS</p>
+          <h4 class="font-bold text-text-dark">5</h4>
+          <span class="change-indicator down text-red-500 text-xs">↓ 2%</span>
         </div>
-        <div class="stat-card-mini">
-          <p>FOLLOW-UPS</p>
-          <h4>7</h4>
-          <span class="change-indicator neutral">→ 0%</span>
+        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
+          <p class="text-xs text-text-light">FOLLOW-UPS</p>
+          <h4 class="font-bold text-text-dark">7</h4>
+          <span class="change-indicator neutral text-gray-500 text-xs">→ 0%</span>
         </div>
-        <div class="stat-card-mini">
-          <p>NEW PATIENTS</p>
-          <h4>6</h4>
-          <span class="change-indicator up">↑ 12%</span>
+        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
+          <p class="text-xs text-text-light">NEW PATIENTS</p>
+          <h4 class="font-bold text-text-dark">6</h4>
+          <span class="change-indicator up text-green-500 text-xs">↑ 12%</span>
         </div>
       </div>
     </section>
 
-    <!-- Patient Demographics Donut Chart -->
-    <section class="card card-shadow">
-      <div class="card-header">
-        <h3>PATIENT DEMOGRAPHICS <span class="badge bg-primary">1,248 Total</span></h3>
+    <!-- Patient Demographics -->
+    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-section-header font-semibold">PATIENT DEMOGRAPHICS</h3>
+        <span class="badge bg-primary text-white text-xs px-2 py-1 rounded-full">1,248 Total</span>
       </div>
-      <div class="card-body">
-        <div class="chart-container">
-          <canvas id="gender-distribution-chart"></canvas>
-        </div>
-        <div class="legend">
-          <div class="legend-item">
-            <span class="dot" style="background-color: #3b82f6;"></span> Women (40%) - 499
-          </div>
-          <div class="legend-item">
-            <span class="dot" style="background-color: #f59e0b;"></span> Men (60%) - 749
-          </div>
-        </div>
-        <a href="#" class="btn btn-sm btn-outline">View Demographics</a>
+      <div class="chart-container h-40 mb-4 flex items-center justify-center">
+        <canvas id="gender-distribution-chart" class="w-full h-full"></canvas>
       </div>
+      <div class="legend flex flex-wrap gap-3 mb-4">
+        <div class="legend-item flex items-center text-sm">
+          <span class="dot inline-block w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+          Women (40%) - 499
+        </div>
+        <div class="legend-item flex items-center text-sm">
+          <span class="dot inline-block w-3 h-3 rounded-full bg-amber-500 mr-2"></span>
+          Men (60%) - 749
+        </div>
+      </div>
+      <a href="#" class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200 block text-center">
+        View Demographics
+      </a>
     </section>
 
-    <!-- Age Distribution Bar Chart -->
-    <section class="card card-shadow">
-      <div class="card-header">
-        <h3>AGE DISTRIBUTION</h3>
-      </div>
-      <div class="card-body">
-        <div class="chart-container">
-          <canvas id="age-distribution-chart"></canvas>
-        </div>
+    <!-- Age Distribution -->
+    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <h3 class="text-section-header font-semibold mb-4">AGE DISTRIBUTION</h3>
+      <div class="chart-container h-40 flex items-center justify-center">
+        <canvas id="age-distribution-chart" class="w-full h-full"></canvas>
       </div>
     </section>
   </main>

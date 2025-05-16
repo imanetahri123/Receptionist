@@ -11,7 +11,6 @@ import { HttpClient } from '@angular/common/http';
   imports: [CommonModule, FormsModule],
 })
 export class ProfileComponent implements OnInit {
-  // ✅ defaultUser vient en premier
   readonly defaultPhoto = '/assets/images/pers.jpg';
   readonly defaultUser = {
     name: 'N/A',
@@ -28,8 +27,30 @@ export class ProfileComponent implements OnInit {
   };
 
   user: any = null;
-  editedUser: any = { ...this.defaultUser }; // ✅ Maintenant autorisé
+  editedUser: any = { ...this.defaultUser };
   isEditing: boolean = false;
+
+  // Liste par défaut, remplacée si l'API retourne recentAppointments
+  recentAppointments: any[] = [
+    {
+      date: '2025-06-01',
+      patient: 'Mme. Slimani',
+      motif: 'Consultation',
+      status: 'Terminé'
+    },
+    {
+      date: '2025-06-03',
+      patient: 'Mr. Tahri',
+      motif: 'Examen',
+      status: 'Annulé'
+    },
+    {
+      date: '2025-06-05',
+      patient: 'M. Barkouch',
+      motif: 'Suivi',
+      status: 'À venir'
+    }
+  ];
 
   constructor(private http: HttpClient) {}
 
@@ -52,6 +73,10 @@ export class ProfileComponent implements OnInit {
           },
         };
         this.editedUser = { ...this.user };
+        // Si l'API retourne les rendez-vous, on remplace la liste par défaut :
+        if (data?.recentAppointments) {
+          this.recentAppointments = data.recentAppointments;
+        }
       },
       error: (err) => {
         console.error('Erreur lors du chargement du profil', err);

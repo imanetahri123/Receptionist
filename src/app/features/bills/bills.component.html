@@ -1,26 +1,32 @@
-<div class="bills-container">
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
   <!-- Header -->
-  <section class="bills-header glass-card">
+  <section class="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mb-6 flex justify-between items-center transform transition-all hover:shadow-xl duration-300">
     <div class="header-content">
-      <h2>Gestion des Factures</h2>
-      <p>Suivez et gérez les factures des patients en temps réel.</p>
+      <h2 class="text-2xl font-bold text-gray-900">Gestion des Factures</h2>
+      <p class="text-sm text-gray-500 mt-1">Suivez et gérez les factures des patients en temps réel.</p>
     </div>
-    <button class="btn-primary">+ Ajouter une Facture</button>
+    <button class="btn-primary bg-gradient-to-r from-green-500 to-teal-400 hover:from-green-600 hover:to-teal-500 text-white font-semibold px-5 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+      + Ajouter une Facture
+    </button>
   </section>
 
-  <!-- Filtres -->
-  <section class="filters-section glass-card">
-    <div class="filter-row">
-      <!-- Barre de recherche -->
+  <!-- Filters -->
+  <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-6 glass-effect">
+    <div class="filter-row grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Recherche -->
       <div class="filter-group">
-        <label>Rechercher</label>
-        <input type="text" placeholder="Nom du patient, ID..." [(ngModel)]="searchQuery" />
+        <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+        <input type="text"
+               placeholder="Nom du patient, ID..."
+               [(ngModel)]="searchQuery"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
 
-      <!-- Filtre par statut -->
+      <!-- Statut -->
       <div class="filter-group">
-        <label>Statut</label>
-        <select [(ngModel)]="selectedStatus">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+        <select [(ngModel)]="selectedStatus"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">Tous les statuts</option>
           <option value="paid">Payé</option>
           <option value="pending">En attente</option>
@@ -30,35 +36,48 @@
     </div>
   </section>
 
-  <!-- Liste des factures sous forme de tableau -->
-  <section class="invoices-table glass-card">
-    <table class="invoice-list">
-      <thead>
-        <tr>
-          <th>#ID</th>
-          <th>Patient</th>
-          <th>Date</th>
-          <th>Montant</th>
-          <th>Statut</th>
-          <th>Description</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let invoice of filteredInvoices">
-          <td>{{ invoice.id }}</td>
-          <td>{{ invoice.patientName }}</td>
-          <td>{{ invoice.date | date: 'dd/MM/yyyy' }}</td>
-          <td>{{ invoice.amount | currency: 'EUR' }}</td>
-          <td><span class="status-badge" [class]="getStatusClass(invoice.status)">{{ invoice.status }}</span></td>
-          <td>{{ invoice.description }}</td>
-          <td>
-            <button class="btn-action btn-edit" title="Modifier"><i class="fas fa-pencil-alt"></i></button>
-            <button class="btn-action btn-delete" title="Supprimer"><i class="fas fa-trash-alt"></i></button>
-            <button class="btn-action btn-view" title="Voir la facture"><i class="fas fa-eye"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Tableau des factures -->
+  <section class="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr class="text-sm text-gray-600 uppercase tracking-wider">
+            <th scope="col" class="px-6 py-3 font-medium">#ID</th>
+            <th scope="col" class="px-6 py-3 font-medium">Patient</th>
+            <th scope="col" class="px-6 py-3 font-medium">Date</th>
+            <th scope="col" class="px-6 py-3 font-medium">Montant</th>
+            <th scope="col" class="px-6 py-3 font-medium">Statut</th>
+            <th scope="col" class="px-6 py-3 font-medium">Description</th>
+            <th scope="col" class="px-6 py-3 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let invoice of filteredInvoices" class="hover:bg-gray-50 transition-colors duration-200">
+            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ invoice.patientName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.date | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ invoice.amount | currency: 'EUR' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize"
+                    [class]="getStatusClass(invoice.status)">
+                {{ invoice.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">{{ invoice.description || 'Aucune description' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+              <button class="btn-action btn-edit text-blue-500 hover:text-blue-700 transition-colors">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+              <button class="btn-action btn-delete text-red-500 hover:text-red-700 transition-colors">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-action btn-view text-green-500 hover:text-green-700 transition-colors">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </div>

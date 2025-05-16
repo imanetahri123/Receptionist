@@ -1,104 +1,163 @@
-<div *ngIf="user; else loading">
-  <div class="profile-container">
-    <!-- Section principale -->
-    <section class="profile-overview glass-card">
-      <div class="profile-header">
-        <h2>Mon Profil</h2>
-        <p>Gérez vos informations personnelles ici.</p>
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Profil Header -->
+    <section class="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 mb-8 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+      <!-- Badge en haut à droite -->
+      <div class="absolute top-4 right-4 text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">Profil Actif</div>
+
+      <!-- Photo de profil -->
+      <div class="relative group">
+        <img [src]="user?.photo || defaultPhoto" alt="Photo de {{ user?.name }}" 
+             class="w-32 h-32 object-cover rounded-xl shadow-md border-4 border-primary/30 group-hover:border-primary transition-all duration-300" />
+        <button (click)="openEditModal()" 
+                class="absolute bottom-0 right-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-5 1-1 5L2.3 18.3a2.122 2.122 0 0 1-.3-3.1L11 4z"></path>
+          </svg>
+        </button>
       </div>
 
-      <div class="profile-main">
-        <div class="profile-photo">
-          <img [src]="user.photo" alt="Photo de {{ user.name }}" />
-          <button class="btn-edit-photo" (click)="openEditModal()">
-            <i class="fas fa-camera"></i> Changer la photo
+      <!-- Informations du profil -->
+      <div class="flex-1 text-center md:text-left space-y-2">
+        <h2 class="text-2xl font-bold text-gray-900">{{ user?.name || 'Utilisateur Inconnu' }}</h2>
+        <p class="text-sm text-gray-500">{{ user?.role || 'Rôle inconnu' }}</p>
+        <div class="space-y-1 mt-4">
+          <p><span class="text-gray-600">📧 Email :</span> {{ user?.email || 'N/A' }}</p>
+          <p><span class="text-gray-600">📞 Téléphone :</span> {{ user?.phone || 'Non renseigné' }}</p>
+          <p><span class="text-gray-600">📅 Membre depuis :</span> {{ user?.joinDate ? (user.joinDate | date:'mediumDate') : 'N/A' }}</p>
+        </div>
+        <div class="mt-4 flex justify-center md:justify-start gap-3">
+          <button (click)="openEditModal()" class="btn-edit-profile px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark shadow-md hover:shadow-lg transition-all duration-300">
+            Modifier les informations
+          </button>
+          <button class="btn-change-password px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-md hover:shadow-lg transition-all duration-300">
+            Changer le mot de passe
           </button>
         </div>
-
-        <div class="profile-details">
-          <div class="detail-group">
-            <label>Nom complet</label>
-            <input type="text" [value]="user.name" disabled />
-          </div>
-          <div class="detail-group">
-            <label>Email</label>
-            <input type="email" [value]="user.email" disabled />
-          </div>
-          <div class="detail-group">
-            <label>Téléphone</label>
-            <input type="tel" [value]="user.phone" disabled />
-          </div>
-          <div class="detail-group">
-            <label>Rôle</label>
-            <input type="text" [value]="user.role" disabled />
-          </div>
-        </div>
-      </div>
-
-      <div class="profile-actions">
-        <button class="btn-action btn-edit" (click)="openEditModal()">Modifier les informations</button>
-        <button class="btn-action btn-change-password">Changer le mot de passe</button>
       </div>
     </section>
 
-    <!-- Informations supplémentaires -->
-    <section class="profile-additional">
-      <div class="additional-card glass-card">
-        <h3>À propos</h3>
-        <p>
-          Vous travaillez dans l'établissement médical depuis 
-          {{ user.joinDate | date: 'dd/MM/yyyy' }}.
-        </p>
+    <!-- Statistiques Utilisateur -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 text-center hover:shadow-lg transition-shadow duration-300">
+        <div class="text-blue-500 text-3xl mb-2">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h4 class="text-sm uppercase tracking-wider text-gray-500">Rendez-vous gérés</h4>
+        <p class="text-2xl font-bold text-gray-800 mt-2">{{ user?.stats?.appointments || 0 }}</p>
       </div>
 
-      <div class="additional-card glass-card">
-        <h3>Statistiques</h3>
-        <ul>
-          <li><i class="fas fa-calendar-check"></i> Rendez-vous gérés : {{ user.stats?.appointments || 0 }}</li>
-          <li><i class="fas fa-user-md"></i> Médecins suivis : {{ user.stats?.doctors || 0 }}</li>
-          <li><i class="fas fa-file-invoice-dollar"></i> Factures traitées : {{ user.stats?.bills || 0 }}</li>
-        </ul>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 text-center hover:shadow-lg transition-shadow duration-300">
+        <div class="text-yellow-500 text-3xl mb-2">
+          <i class="fas fa-user-md"></i>
+        </div>
+        <h4 class="text-sm uppercase tracking-wider text-gray-500">Médecins suivis</h4>
+        <p class="text-2xl font-bold text-gray-800 mt-2">{{ user?.stats?.doctors || 0 }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 text-center hover:shadow-lg transition-shadow duration-300">
+        <div class="text-purple-500 text-3xl mb-2">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <h4 class="text-sm uppercase tracking-wider text-gray-500">Factures traitées</h4>
+        <p class="text-2xl font-bold text-gray-800 mt-2">{{ user?.stats?.bills || 0 }}</p>
+      </div>
+    </section>
+
+    <!-- Informations détaillées -->
+    <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Détails du Profil</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+          <input type="text" [value]="user?.name || 'N/A'" disabled class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-800 cursor-not-allowed" />
+        </div>
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="text" [value]="user?.email || 'N/A'" disabled class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-800 cursor-not-allowed" />
+        </div>
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+          <input type="text" [value]="user?.phone || 'N/A'" disabled class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-800 cursor-not-allowed" />
+        </div>
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+          <input type="text" [value]="user?.role || 'N/A'" disabled class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-800 cursor-not-allowed" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section historique -->
+    <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Historique des Rendez-vous</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr *ngFor="let app of recentAppointments">
+              <td class="px-4 py-4 whitespace-nowrap">{{ app.date | date:'shortDate' }}</td>
+              <td class="px-4 py-4 whitespace-nowrap">{{ app.type }}</td>
+              <td class="px-4 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                      [class.bg-green-100.text-green-800]="app.status === 'Terminé'"
+                      [class.bg-yellow-100.text-yellow-800]="app.status === 'En cours'"
+                      [class.bg-red-100.text-red-800]="app.status === 'Annulé'"
+                      [class.bg-gray-100.text-gray-800]="app.status === 'À venir'">
+                  {{ app.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
   </div>
-</div>
 
-<ng-template #loading>
-  <p>Chargement des informations en cours...</p>
-</ng-template>
-
-<!-- ✅ Modale d’édition -->
-<ng-template #editModal *ngIf="isEditing">
-  <div class="modal-overlay" (click)="closeEditModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <h3>Modifier vos informations personnelles</h3>
-
-      <form (ngSubmit)="saveChanges()">
+  <!-- Modale de modification -->
+  <div *ngIf="isEditing" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-transform duration-300 scale-in">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-800">Modifier votre profil</h3>
+        <button (click)="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      <form (ngSubmit)="saveChanges()" class="space-y-4">
+        <!-- Nom -->
         <div class="form-group">
-          <label>Nom complet</label>
-          <input type="text" [(ngModel)]="editedUser.name" name="name" required />
+          <label class="block text-sm font-medium text-gray-700">Nom complet</label>
+          <input type="text" [(ngModel)]="editedUser.name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary outline-none" />
         </div>
 
+        <!-- Email -->
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" [(ngModel)]="editedUser.email" name="email" required />
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" [(ngModel)]="editedUser.email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary outline-none" />
         </div>
 
+        <!-- Téléphone -->
         <div class="form-group">
-          <label>Téléphone</label>
-          <input type="tel" [(ngModel)]="editedUser.phone" name="phone" required />
+          <label class="block text-sm font-medium text-gray-700">Téléphone</label>
+          <input type="tel" [(ngModel)]="editedUser.phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary outline-none" />
         </div>
 
-        <div class="form-group">
-          <label>Rôle</label>
-          <input type="text" [value]="editedUser.role" disabled />
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" (click)="closeEditModal()" class="btn-cancel">Annuler</button>
-          <button type="submit" class="btn-save">Enregistrer</button>
+        <!-- Boutons -->
+        <div class="modal-actions flex justify-end gap-3 mt-6">
+          <button type="button" (click)="closeEditModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+            Enregistrer
+          </button>
         </div>
       </form>
     </div>
   </div>
-</ng-template>
+</div>

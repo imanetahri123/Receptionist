@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{html,ts}",
-  ],
+  content: ["./src/**/*.{html,ts}"],
   theme: {
     extend: {
       colors: {
@@ -12,19 +10,20 @@ module.exports = {
         background: '#F7F9FC',
         card: '#FFFFFF',
         text: {
-          DEFAULT: '#253746', // Dark blue-gray for main text
-          light: '#546A7B',
-          muted: '#8096A7',
+          DEFAULT: '#253746',     // Main text color
+          light: '#546A7B',       // Lighter text
+          dark: '#1A202C',        // Darker text for headings
+          muted: '#8096A7',       // Muted/disabled text
         },
         status: {
-          urgent: '#E05C5C',  // Soft red - urgent/emergency
-          success: '#5CBA99', // Mint green - new items/success
-          warning: '#F0B86C', // Amber - warning/pending
-          info: '#6098D3',    // Light blue - informational
+          urgent: '#E05C5C',   // Soft red - urgent/emergency
+          success: '#5CBA99',  // Mint green - new items/success
+          warning: '#F0B86C',  // Amber - warning/pending
+          info: '#6098D3',     // Light blue - informational
         },
-        border: '#E2E8F0',    // Light gray for borders
-        hover: '#EDF2F7',     // Very light blue for hover states
-        focus: '#CBE1FF',     // Light blue for focus states
+        border: '#E2E8F0',     // Light gray for borders
+        hover: '#EDF2F7',      // Very light blue for hover states
+        focus: '#CBE1FF',      // Light blue for focus states
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

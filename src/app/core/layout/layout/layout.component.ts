@@ -1,27 +1,27 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    RouterOutlet // ✅ Ajout ici pour utiliser <router-outlet>
-  ],
   standalone: true,
+  imports: [RouterModule]
 })
 export class LayoutComponent {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
+  // Méthode pour vérifier si la route est active
   isActive(route: string): boolean {
     return this.router.url === route;
   }
 
+  // Méthode logout
   logout(): void {
+    // Ici tu peux ajouter la logique de déconnexion
     console.log('Déconnexion...');
-    // Exemple de redirection vers login
+    
+    // Exemple : redirection vers la page de login
     // this.router.navigate(['/login']);
   }
 }
