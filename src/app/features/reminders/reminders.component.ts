@@ -34,6 +34,17 @@ export class RemindersComponent {
     }
   ];
 
+  showModal = false;
+  modalMode: 'add' | 'edit' | 'view' = 'add';
+  selectedReminder: any = null;
+  newReminder: any = {
+    id: null,
+    patientName: '',
+    message: '',
+    date: '',
+    status: 'en attente'
+  };
+
   getStatusClass(status: string): string {
     switch (status.toLowerCase()) {
       case 'envoyé':
@@ -44,6 +55,57 @@ export class RemindersComponent {
         return 'bg-red-100 text-red-700';
       default:
         return 'bg-gray-100 text-gray-700';
+    }
+  }
+
+  openAddModal() {
+    this.modalMode = 'add';
+    this.newReminder = {
+      id: null,
+      patientName: '',
+      message: '',
+      date: '',
+      status: 'en attente'
+    };
+    this.showModal = true;
+  }
+
+  openEditModal(reminder: any) {
+    this.modalMode = 'edit';
+    this.newReminder = { ...reminder };
+    this.showModal = true;
+  }
+
+  openViewModal(reminder: any) {
+    this.modalMode = 'view';
+    this.selectedReminder = reminder;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedReminder = null;
+  }
+
+  saveReminder() {
+    if (!this.newReminder.patientName || !this.newReminder.message || !this.newReminder.date) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+    if (this.modalMode === 'add') {
+      const newId = this.reminders.length ? Math.max(...this.reminders.map(r => r.id)) + 1 : 1;
+      this.newReminder.id = newId;
+      this.reminders.push({ ...this.newReminder });
+    } else if (this.modalMode === 'edit') {
+      const idx = this.reminders.findIndex(r => r.id === this.newReminder.id);
+      if (idx !== -1) this.reminders[idx] = { ...this.newReminder };
+    }
+    this.closeModal();
+  }
+
+  deleteReminder(reminder: any) {
+    if (confirm(`Supprimer le rappel pour ${reminder.patientName} ?`)) {
+      this.reminders = this.reminders.filter(r => r.id !== reminder.id);
     }
   }
 }

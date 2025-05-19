@@ -1,29 +1,30 @@
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <section class="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mb-6 flex justify-between items-center transform transition-all hover:shadow-xl duration-300">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50 py-8 px-4 sm:px-6 lg:px-8">
+  <!-- Header unifié avec bouton ajout -->
+  <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 flex justify-between items-center mb-6">
     <div class="header-content">
-      <h2 class="text-2xl font-bold text-gray-900">Gestion des Factures</h2>
-      <p class="text-sm text-gray-500 mt-1">Suivez et gérez les factures des patients en temps réel.</p>
+      <h2 class="text-xl font-bold text-primary">Gestion des Factures</h2>
+      <p class="text-sm text-text-light mt-1">Suivez et gérez les factures des patients en temps réel.</p>
     </div>
-    <button class="btn-primary bg-gradient-to-r from-green-500 to-teal-400 hover:from-green-600 hover:to-teal-500 text-white font-semibold px-5 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-      + Ajouter une Facture
-    </button>
+    <div class="header-actions flex items-center gap-4">
+      <button 
+        (click)="openAddModal()" 
+        class="btn btn-primary px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.01]">
+        + Nouvelle Facture
+      </button>
+    </div>
   </section>
 
   <!-- Filters -->
   <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-6 glass-effect">
     <div class="filter-row grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Recherche -->
-      <div class="filter-group">
+      <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
         <input type="text"
                placeholder="Nom du patient, ID..."
                [(ngModel)]="searchQuery"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
-
-      <!-- Statut -->
-      <div class="filter-group">
+      <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
         <select [(ngModel)]="selectedStatus"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -35,6 +36,7 @@
       </div>
     </div>
   </section>
+  
 
   <!-- Tableau des factures -->
   <section class="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
@@ -42,37 +44,37 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr class="text-sm text-gray-600 uppercase tracking-wider">
-            <th scope="col" class="px-6 py-3 font-medium">#ID</th>
-            <th scope="col" class="px-6 py-3 font-medium">Patient</th>
-            <th scope="col" class="px-6 py-3 font-medium">Date</th>
-            <th scope="col" class="px-6 py-3 font-medium">Montant</th>
-            <th scope="col" class="px-6 py-3 font-medium">Statut</th>
-            <th scope="col" class="px-6 py-3 font-medium">Description</th>
-            <th scope="col" class="px-6 py-3 font-medium text-right">Actions</th>
+            <th class="px-6 py-3 font-medium">#ID</th>
+            <th class="px-6 py-3 font-medium">Patient</th>
+            <th class="px-6 py-3 font-medium">Date</th>
+            <th class="px-6 py-3 font-medium">Montant</th>
+            <th class="px-6 py-3 font-medium">Statut</th>
+            <th class="px-6 py-3 font-medium">Description</th>
+            <th class="px-6 py-3 font-medium text-right">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr *ngFor="let invoice of filteredInvoices" class="hover:bg-gray-50 transition-colors duration-200">
-            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.id }}</td>
+          <tr *ngFor="let invoice of filteredInvoices" class="hover:bg-teal-50 transition-colors duration-200">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-700">#{{ invoice.id }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ invoice.patientName }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.date | date: 'dd/MM/yyyy' }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ invoice.amount | currency: 'EUR' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-teal-700">{{ invoice.amount | currency: 'EUR' }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize"
-                    [class]="getStatusClass(invoice.status)">
-                {{ invoice.status }}
+              <span class="inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold capitalize"
+                    [ngClass]="getStatusClass(invoice.status)">
+                {{ invoice.status === 'paid' ? 'Payé' : invoice.status === 'pending' ? 'En attente' : 'Impayé' }}
               </span>
             </td>
             <td class="px-6 py-4 text-sm text-gray-500">{{ invoice.description || 'Aucune description' }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-              <button class="btn-action btn-edit text-blue-500 hover:text-blue-700 transition-colors">
-                <i class="fas fa-pencil-alt"></i>
+              <button (click)="openEditModal(invoice)" class="btn-action btn-edit text-blue-500 hover:text-blue-700 transition-colors" title="Modifier">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h6"/></svg>
               </button>
-              <button class="btn-action btn-delete text-red-500 hover:text-red-700 transition-colors">
-                <i class="fas fa-trash-alt"></i>
+              <button (click)="deleteInvoice(invoice)" class="btn-action btn-delete text-red-500 hover:text-red-700 transition-colors" title="Supprimer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
-              <button class="btn-action btn-view text-green-500 hover:text-green-700 transition-colors">
-                <i class="fas fa-eye"></i>
+              <button (click)="openViewModal(invoice)" class="btn-action btn-view text-green-500 hover:text-green-700 transition-colors" title="Voir">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               </button>
             </td>
           </tr>
@@ -80,4 +82,110 @@
       </table>
     </div>
   </section>
+
+  <!-- Modale d'ajout/édition/visualisation -->
+  <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fadeIn">
+      <button (click)="closeModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+      <ng-container [ngSwitch]="modalMode">
+        <!-- Ajout -->
+        <form *ngSwitchCase="'add'" (ngSubmit)="saveInvoice()" autocomplete="off">
+          <h3 class="text-lg font-bold mb-4 text-teal-700">Ajouter une Facture</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+              <input type="text" [(ngModel)]="newInvoice.patientName" name="patientName" required
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input type="date" [(ngModel)]="newInvoice.date" name="date" required
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Montant</label>
+              <input type="number" [(ngModel)]="newInvoice.amount" name="amount" required
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+              <select [(ngModel)]="newInvoice.status" name="status"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                <option value="paid">Payé</option>
+                <option value="pending">En attente</option>
+                <option value="overdue">Impayé</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea [(ngModel)]="newInvoice.description" name="description"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+            </div>
+          </div>
+          <div class="flex justify-end gap-3 mt-4">
+            <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annuler</button>
+            <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Sauvegarder</button>
+          </div>
+        </form>
+        <!-- Édition -->
+        <form *ngSwitchCase="'edit'" (ngSubmit)="saveInvoice()" autocomplete="off">
+          <h3 class="text-lg font-bold mb-4 text-blue-700">Modifier la Facture</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+              <input type="text" [(ngModel)]="newInvoice.patientName" name="patientName" required
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input type="date" [(ngModel)]="newInvoice.date" name="date" required
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Montant</label>
+              <input type="number" [(ngModel)]="newInvoice.amount" name="amount" required
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+              <select [(ngModel)]="newInvoice.status" name="status"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="paid">Payé</option>
+                <option value="pending">En attente</option>
+                <option value="overdue">Impayé</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea [(ngModel)]="newInvoice.description" name="description"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+          </div>
+          <div class="flex justify-end gap-3 mt-4">
+            <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annuler</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Mettre à jour</button>
+          </div>
+        </form>
+        <!-- Visualisation -->
+        <div *ngSwitchCase="'view'">
+          <h3 class="text-lg font-bold mb-4 text-green-700">Détails de la Facture</h3>
+          <div class="space-y-2">
+            <p><strong>Patient :</strong> {{ selectedInvoice.patientName }}</p>
+            <p><strong>Date :</strong> {{ selectedInvoice.date | date: 'dd/MM/yyyy' }}</p>
+            <p><strong>Montant :</strong> {{ selectedInvoice.amount | currency: 'EUR' }}</p>
+            <p><strong>Statut :</strong> 
+              <span class="inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold capitalize"
+                    [ngClass]="getStatusClass(selectedInvoice.status)">
+                {{ selectedInvoice.status === 'paid' ? 'Payé' : selectedInvoice.status === 'pending' ? 'En attente' : 'Impayé' }}
+              </span>
+            </p>
+            <p><strong>Description :</strong> {{ selectedInvoice.description || 'Aucune description' }}</p>
+          </div>
+          <div class="flex justify-end gap-3 mt-6">
+            <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Fermer</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
 </div>

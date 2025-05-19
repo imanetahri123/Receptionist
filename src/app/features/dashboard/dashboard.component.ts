@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -7,21 +7,29 @@ import Chart from 'chart.js/auto';
   standalone: true,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: [CommonModule]
+  imports: [NgFor, NgIf]
 })
 export class DashboardComponent implements AfterViewInit {
 
+  // Liste des événements pour les rendez-vous
   calendarEvents = [
     { title: 'Dr. Imane - Mr. Kamal', time: '10:00', photo: 'assets/images/doctor5.jpg' },
     { title: 'Dr. Mehdi - Mme. Hilal', time: '11:30', photo: 'assets/images/doctor1.jpg' },
     { title: 'Dr. Mohammed - M. Walid', time: '14:00', photo: 'assets/images/doctor3.jpg' }
   ];
 
-  ngAfterViewInit() {
-    this.initRdvChart();        // Graphique des rendez-vous (barres)
-    this.initGenderChart();     // Graphique démographie (donut)
-    this.initAgeChart();        // Graphique répartition par âge (barres horizontales)
-    this.initWeeklyOverviewChart(); // 👈 Nouveau : Weekly Overview
+  // Variables pour les modales
+  showAppointmentForm = false;
+  showPatientForm = false;
+  isModalOpen = false;
+  modalTitle = '';
+  modalChartData: number[] = [];
+
+  ngAfterViewInit(): void {
+    this.initRdvChart();           // Rendez-vous par jour
+    this.initGenderChart();        // Répartition Hommes/Femmes
+    this.initAgeChart();           // Répartition par âge
+    this.initWeeklyOverviewChart(); // Vue hebdomadaire
   }
 
   // -------------------------------------------------------------------------------------------------
@@ -45,22 +53,11 @@ export class DashboardComponent implements AfterViewInit {
       options: {
         responsive: true,
         scales: {
-          x: {
-            grid: {
-              display: false
-            }
-          },
-          y: {
-            beginAtZero: true,
-            grid: {
-              color: '#e5e7eb'
-            }
-          }
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, grid: { color: '#e5e7eb' } }
         },
         plugins: {
-          legend: {
-            display: false
-          }
+          legend: { display: false }
         }
       }
     });
@@ -70,10 +67,7 @@ export class DashboardComponent implements AfterViewInit {
   // Graphique circulaire (Donut) : Démographie des patients (Hommes/Femmes)
   initGenderChart() {
     const genderCtx = document.getElementById('gender-distribution-chart') as HTMLCanvasElement;
-    if (!genderCtx) {
-      console.error("Canvas 'gender-distribution-chart' introuvable !");
-      return;
-    }
+    if (!genderCtx) return;
 
     new Chart(genderCtx, {
       type: 'doughnut',
@@ -91,9 +85,7 @@ export class DashboardComponent implements AfterViewInit {
         responsive: true,
         cutout: '60%',
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: (context) => `${context.label}: ${context.parsed}%`
@@ -108,10 +100,7 @@ export class DashboardComponent implements AfterViewInit {
   // Graphique à barres horizontales : Répartition par âge
   initAgeChart() {
     const ageCtx = document.getElementById('age-distribution-chart') as HTMLCanvasElement;
-    if (!ageCtx) {
-      console.error("Canvas 'age-distribution-chart' introuvable !");
-      return;
-    }
+    if (!ageCtx) return;
 
     new Chart(ageCtx, {
       type: 'bar',
@@ -130,9 +119,7 @@ export class DashboardComponent implements AfterViewInit {
         indexAxis: 'y',
         responsive: true,
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: (context) => `${context.label}: ${context.raw}%`
@@ -142,18 +129,10 @@ export class DashboardComponent implements AfterViewInit {
         scales: {
           x: {
             beginAtZero: true,
-            ticks: {
-              stepSize: 10
-            },
-            grid: {
-              color: '#e5e7eb'
-            }
+            ticks: { stepSize: 10 },
+            grid: { color: '#e5e7eb' }
           },
-          y: {
-            grid: {
-              display: false
-            }
-          }
+          y: { grid: { display: false } }
         }
       }
     });
@@ -163,10 +142,7 @@ export class DashboardComponent implements AfterViewInit {
   // Graphique hebdomadaire : Aperçu hebdomadaire
   initWeeklyOverviewChart() {
     const weeklyCtx = document.getElementById('weekly-overview-chart') as HTMLCanvasElement;
-    if (!weeklyCtx) {
-      console.error("Canvas 'weekly-overview-chart' introuvable !");
-      return;
-    }
+    if (!weeklyCtx) return;
 
     new Chart(weeklyCtx, {
       type: 'bar',
@@ -185,9 +161,7 @@ export class DashboardComponent implements AfterViewInit {
         indexAxis: 'x',
         responsive: true,
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: (context) => `${context.label}: ${context.raw} RDV`
@@ -197,25 +171,118 @@ export class DashboardComponent implements AfterViewInit {
         scales: {
           x: {
             beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            },
-            grid: {
-              display: false
-            }
+            ticks: { stepSize: 1 },
+            grid: { display: false }
           },
-          y: {
-            grid: {
-              color: '#e5e7eb'
-            }
-          }
+          y: { grid: { color: '#e5e7eb' } }
         }
       }
     });
   }
 
+  // -------------------------------------------------------------------------------------------------
+  // Méthode pour ouvrir la modale avec données dynamiques
+  openModal(type: string): void {
+    switch (type) {
+      case 'appointments':
+        this.modalTitle = 'Rendez-vous par Jour';
+        this.modalChartData = [5, 7, 3, 6, 4];
+        break;
+      case 'patients':
+        this.modalTitle = 'Statistiques Patients';
+        this.modalChartData = [25, 3, 12, 7];
+        break;
+      default:
+        this.modalTitle = 'Détails';
+        this.modalChartData = [0, 0];
+    }
+
+    this.isModalOpen = true;
+
+    setTimeout(() => {
+      this.initModalChart();
+    }, 100);
+  }
+
+  // -------------------------------------------------------------------------------------------------
+  // Graphique dans la modale
+  initModalChart(): void {
+    const modalCtx = document.getElementById('modal-chart') as HTMLCanvasElement;
+    if (!modalCtx) return;
+
+    // Si un graphique existait déjà, on le détruit
+    const existingChart = Chart.getChart(modalCtx);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    new Chart(modalCtx, {
+      type: 'line',
+      data: {
+        labels: ['Semaine dernière', 'Cette semaine'],
+        datasets: [{
+          label: this.modalTitle,
+          data: this.modalChartData,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: '#3b82f6'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.label}: ${context.parsed.y}`
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // -------------------------------------------------------------------------------------------------
+  // Fermer la modale
+  closeModal(): void {
+    this.isModalOpen = false;
+  }
+
+  // -------------------------------------------------------------------------------------------------
+  // Ouvrir les formulaires modaux
+  openNewAppointmentModal(): void {
+    this.showAppointmentForm = true;
+  }
+
+  openNewPatientModal(): void {
+    this.showPatientForm = true;
+  }
+
+  closeModals(): void {
+    this.showAppointmentForm = false;
+    this.showPatientForm = false;
+  }
+
+  submitAppointment(event: Event): void {
+    event.preventDefault();
+    alert('Rendez-vous enregistré avec succès !');
+    this.closeModals();
+  }
+
+  submitPatient(event: Event): void {
+    event.preventDefault();
+    alert('Patient ajouté avec succès !');
+    this.closeModals();
+  }
+
   // Gestion des erreurs d'image
-  onImageError(event: any) {
-    event.target.src = 'https://via.placeholder.com/60x60?text=Erreur   ';
+  onImageError(event: any): void {
+    event.target.src = 'https://via.placeholder.com/60x60?text=Erreur ';
   }
 }

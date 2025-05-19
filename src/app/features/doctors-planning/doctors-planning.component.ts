@@ -4,52 +4,78 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common'; // ✅ Pour @for et autres directives Angular
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-doctors-planning',
   templateUrl: './doctors-planning.component.html',
   styleUrls: ['./doctors-planning.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule] // ✅ Ajoute CommonModule ici
+  imports: [CommonModule, FormsModule]
 })
 export class DoctorsPlanningComponent implements AfterViewInit {
   doctorName = 'Dr. Kamal Berrada';
-  selectedView = 'dayGridMonth';
+  selectedView = 'timeGridWeek';
   currentViewDate = 'Juin 2025';
   selectedDateAppointments: any[] = [];
   showAppointmentPanel = false;
-  selectedDate: string | null = null;
+  showEventModal = false;
+  selectedDate = '';
+
+  // Pour la modale d'édition
+  editEventModal = false;
+  eventToEdit: any = null;
 
   views = [
-    { label: 'Mois', value: 'dayGridMonth' },
-    { label: 'Semaine', value: 'timeGridWeek' },
-    { label: 'Jour', value: 'timeGridDay' }
+    { value: 'dayGridMonth', label: 'Mois' },
+    { value: 'timeGridWeek', label: 'Semaine' },
+    { value: 'timeGridDay', label: 'Jour' }
   ];
 
   calendarEvents = [
     {
-      title: 'Consultation - Mme. Slimani',
+      title: 'Consultation - Salwa Slimani',
       start: '2025-06-10T10:00:00',
       end: '2025-06-10T11:00:00',
-      backgroundColor: '#3b82f6',
-      borderColor: '#3b82f6'
+      backgroundColor: '#6366f1',
+      borderColor: '#6366f1'
     },
     {
-      title: 'Examen - Mr. Tahri',
+      title: 'Examen - Imane Tahri',
       start: '2025-06-15T14:30:00',
       end: '2025-06-15T15:30:00',
       backgroundColor: '#10b981',
       borderColor: '#10b981'
     },
     {
-      title: 'Suivi - M. Barkouch',
+      title: 'Suivi - Sana Barkouch',
       start: '2025-06-15T16:00:00',
       end: '2025-06-15T17:00:00',
       backgroundColor: '#f59e0b',
       borderColor: '#f59e0b'
     }
   ];
+
+  appointmentTypes = [
+    'Consultation',
+    'Suivi',
+    'Examen',
+    'Urgence',
+    'Vaccination',
+    'Bilan',
+    'Téléconsultation',
+    'Intervention',
+    'Autre'
+  ];
+
+  newEvent = {
+    title: '',
+    patient: '',
+    type: 'Consultation',
+    date: '',
+    time: '09:00',
+    duration: 30
+  };
 
   @ViewChild('calendarEl') calendarEl!: ElementRef<HTMLElement>;
   private calendar!: Calendar;
@@ -109,11 +135,9 @@ export class DoctorsPlanningComponent implements AfterViewInit {
     this.updateCurrentViewDate();
   }
 
-  // 🔥 Gestion du clic sur une date vide
   handleDateClick(arg: any): void {
     const clickedDateStr = arg.dateStr.split('T')[0];
 
-    // Filtre les événements du jour cliqué
     this.selectedDateAppointments = this.calendarEvents.filter(event =>
       event.start.includes(clickedDateStr)
     );
@@ -127,45 +151,109 @@ export class DoctorsPlanningComponent implements AfterViewInit {
     }, 100);
   }
 
-  // ⏰ Sélection d'une plage horaire
   handleDateSelect(selectInfo: any): void {
-    const startDate = selectInfo.startStr;
-    const endDate = selectInfo.endStr;
-    const isAllDay = selectInfo.allDay ? 'Toute la journée' : 'De ' + selectInfo.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' à ' + selectInfo.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    const confirm = window.confirm(`Souhaitez-vous ajouter un RDV ${isAllDay} ?`);
+    const date = selectInfo.startStr.split('T')[0];
+    const startTime = selectInfo.start.toTimeString().substring(0, 5);
+    const duration = (selectInfo.end.getTime() - selectInfo.start.getTime()) / 60000;
 
-    if (confirm) {
-      this.calendar.addEvent({
-        title: 'Nouveau RDV',
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-        backgroundColor: '#a855f7',
-        borderColor: '#a855f7'
-      });
-    }
+    this.newEvent = {
+      title: '',
+      patient: '',
+      type: 'Consultation',
+      date: date,
+      time: startTime,
+      duration: duration > 0 ? duration : 30
+    };
+    this.showEventModal = true;
 
-    this.calendar.unselect(); // Réinitialiser la sélection
+    this.calendar.unselect();
   }
 
-  // 📌 Clic sur un événement
-  handleEventClick(arg: any): void {
-    const eventName = arg.event.title;
-    const eventDate = arg.event.start.toLocaleDateString();
+  // Ouvre la modale d'édition quand on clique sur un événement
+  handleEventClick(clickInfo: any): void {
+    const [typeTitle, patient] = clickInfo.event.title.split(' - ');
+    const typeMatch = typeTitle.match(/^\[(.*?)\]/);
+    const type = typeMatch ? typeMatch[1] : 'Consultation';
+    const title = typeTitle.replace(/^\[.*?\]\s?/, '');
 
-    const action = window.prompt(
-      `RDV sélectionné : ${eventName}\nLe : ${eventDate}\n\nQue souhaitez-vous faire ?\n1. Modifier\n2. Supprimer`, 
-      'Modifier'
-    );
+    this.eventToEdit = {
+      event: clickInfo.event,
+      title,
+      patient: patient || '',
+      type,
+      date: clickInfo.event.startStr.split('T')[0],
+      time: clickInfo.event.startStr.split('T')[1]?.substring(0,5) || '09:00',
+      duration: (new Date(clickInfo.event.endStr).getTime() - new Date(clickInfo.event.startStr).getTime()) / 60000
+    };
+    this.editEventModal = true;
+  }
 
-    if (action?.toLowerCase() === 'supprimer' || action === '2') {
-      arg.event.remove();
-    } else {
-      const newTitle = prompt('Nouveau titre du RDV ?', eventName);
-      if (newTitle && newTitle !== eventName) {
-        arg.event.setProp('title', newTitle);
-      }
+  openAddEventModal(): void {
+    const currentDate = new Date().toISOString().split('T')[0];
+    this.newEvent = {
+      title: '',
+      patient: '',
+      type: 'Consultation',
+      date: currentDate,
+      time: '09:00',
+      duration: 30
+    };
+    this.showEventModal = true;
+  }
+
+  closeAddEventModal(): void {
+    this.showEventModal = false;
+  }
+
+  addNewEvent(): void {
+    if (!this.newEvent.title || !this.newEvent.patient || !this.newEvent.date || !this.newEvent.time) {
+      alert('Veuillez remplir tous les champs.');
+      return;
     }
+
+    const start = new Date(`${this.newEvent.date}T${this.newEvent.time}`);
+    const end = new Date(start.getTime() + this.newEvent.duration * 60000);
+
+    this.calendar.addEvent({
+      title: `[${this.newEvent.type}] ${this.newEvent.title} - ${this.newEvent.patient}`,
+      start: start.toISOString(),
+      end: end.toISOString(),
+      backgroundColor: '#6366f1',
+      borderColor: '#6366f1'
+    });
+
+    this.closeAddEventModal();
+  }
+
+  // --- MODALE EDITION ---
+  closeEditEventModal() {
+    this.editEventModal = false;
+    this.eventToEdit = null;
+  }
+
+  saveEditEvent() {
+    if (!this.eventToEdit.title || !this.eventToEdit.patient || !this.eventToEdit.date || !this.eventToEdit.time) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+    }
+    const start = new Date(`${this.eventToEdit.date}T${this.eventToEdit.time}`);
+    const end = new Date(start.getTime() + this.eventToEdit.duration * 60000);
+
+    this.eventToEdit.event.setProp('title', `[${this.eventToEdit.type}] ${this.eventToEdit.title} - ${this.eventToEdit.patient}`);
+    this.eventToEdit.event.setStart(start.toISOString());
+    this.eventToEdit.event.setEnd(end.toISOString());
+
+    this.closeEditEventModal();
+  }
+
+  deleteEditEvent() {
+    if (confirm('Voulez-vous vraiment supprimer ce rendez-vous ?')) {
+      this.eventToEdit.event.remove();
+      this.closeEditEventModal();
+    }
+  }
+
+  saveAllEvents(): void {
+    alert('Fonction de sauvegarde à implémenter.');
   }
 }

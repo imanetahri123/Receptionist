@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-medical-record',
@@ -10,102 +10,80 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./medical-record.component.css']
 })
 export class MedicalRecordComponent {
-  currentView = 'grid'; // Vue par défaut
+  currentView = 'grid';
   isListView = false;
 
-  // Données initiales
   patients = [
     {
       id: 1,
-      name: 'Kamal',
+      name: 'Kamal Berrada',
       email: 'kamal@asio.com',
       phone: '06 12 34 56 78',
-      dob: '12/04/1985',
-      photo: '/assets/images/eps1.jpg',
-      status: 'Active'
+      dob: '1990-04-12',
+      photo: '/assets/images/pers.jpg',
+      status: 'active',
+      nationality: 'Marocaine',
+      bloodGroup: 'A+',
+      maritalStatus: 'Célibataire',
+      gender: 'Homme',
+      address: 'Rabat, Maroc'
     },
     {
       id: 2,
-      name: 'Walid',
-      email: 'walid@asio.com',
+      name: 'Imane Tahri',
+      email: 'imane@asio.com',
       phone: '06 87 65 43 21',
-      dob: '05/08/1990',
+      dob: '1995-08-05',
       photo: '/assets/images/eps2.jpg',
-      status: 'Follow up'
+      status: 'follow up',
+      nationality: 'Marocaine',
+      bloodGroup: 'O-',
+      maritalStatus: 'Mariée',
+      gender: 'Femme',
+      address: 'Casablanca, Maroc'
     },
     {
       id: 3,
-      name: 'Imane',
-      email: 'imane@asio.com',
+      name: 'Salwa Slimani',
+      email: 'salwa@asio.com',
       phone: '07 11 22 33 44',
       dob: '',
       photo: '/assets/images/eps3.jpg',
-      status: 'Critical'
-    },
-    {
-      id: 4,
-      name: 'Ali',
-      email: 'ali@asio.com',
-      phone: '06 11 22 33 44',
-      dob: '15/06/1995',
-      photo: '/assets/images/p1.jpg',
-      status: 'Active'
-    },
-    {
-      id: 5,
-      name: 'Ahmed',
-      email: 'ahmed@asio.com',
-      phone: '06 22 33 44 55',
-      dob: '10/03/1988',
-      photo: '/assets/images/P5.jpg',
-      status: 'Critical'
-    },
-    {
-      id: 6,
-      name: 'Adam',
-      email: 'adam@asio.com',
-      phone: '06 33 44 55 66',
-      dob: '01/01/2000',
-      photo: '/assets/images/P4.jpg',
-      status: 'Follow up'
-    },
-    {
-      id: 7,
-      name: 'Sana',
-      email: 'sana@asio.com',
-      phone: '06 44 55 66 77',
-      dob: '12/12/1992',
-      photo: '/assets/images/p2.jpg',
-      status: 'Active'
-    },
-    {
-      id: 8,
-      name: 'Youssef',
-      email: 'youssef@asio.com',
-      phone: '06 55 66 77 88',
-      dob: '03/09/1980',
-      photo: '/assets/images/P3.jpg',
-      status: 'Critical'
-    },
-    {
-      id: 9,
-      name: 'Soufiane',
-      email: 'soufiane@asio.com',
-      phone: '06 66 77 88 99',
-      dob: '25/05/1997',
-      photo: '/assets/images/P6.jpeg',
-      status: 'Follow up'
+      status: 'critical',
+      nationality: 'Marocaine',
+      bloodGroup: 'B+',
+      maritalStatus: 'Divorcée',
+      gender: 'Femme',
+      address: 'Fès, Maroc'
     }
   ];
 
-  // Propriétés pour les filtres
   searchQuery = '';
   selectedStatus = '';
   selectedVisitFilter = '';
-  filteredPatients: any[] = [...this.patients]; // Copie initiale
+  filteredPatients: any[] = [...this.patients];
 
-  constructor() {
-    this.filteredPatients = [...this.patients];
+  showAddModal = false;
+  editingPatient: any = null;
+  newPatient: any = {
+    id: null,
+    name: '',
+    email: '',
+    phone: '',
+    dob: '',
+    photo: '/assets/images/default-user.png',
+    status: 'active',
+    nationality: '',
+    bloodGroup: '',
+    maritalStatus: '',
+    gender: '',
+    address: ''
+  };
+
+  constructor() {}
+
+  ngOnInit(): void {
+    this.applyFilters();
   }
 
   toggleView() {
@@ -115,64 +93,109 @@ export class MedicalRecordComponent {
   applyFilters() {
     this.filteredPatients = this.patients.filter(patient => {
       const matchesSearch =
+        !this.searchQuery ||
         patient.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         ('#' + patient.id).toLowerCase().includes(this.searchQuery.toLowerCase());
 
       const matchesStatus =
-        !this.selectedStatus || patient.status.toLowerCase() === this.selectedStatus;
+        !this.selectedStatus || patient.status === this.selectedStatus;
 
-      const visitDays = this.getLastVisitDays(patient.dob);
-      let matchesVisit = true;
-
-      if (this.selectedVisitFilter === 'today' && visitDays !== 0) {
-        matchesVisit = false;
-      } else if (this.selectedVisitFilter === 'yesterday' && visitDays !== 1) {
-        matchesVisit = false;
-      } else if (this.selectedVisitFilter === 'week' && (visitDays < 2 || visitDays > 7)) {
-        matchesVisit = false;
-      } else if (this.selectedVisitFilter === 'older' && visitDays <= 7) {
-        matchesVisit = false;
-      }
-
-      return matchesSearch && matchesStatus && matchesVisit;
+      return matchesSearch && matchesStatus;
     });
   }
 
-  getLastVisitDate(dob: string): string {
-    if (!dob) return 'N/A';
-
-    const today = new Date();
-    const lastVisit = new Date(dob);
-    const timeDiff = Math.abs(today.getTime() - lastVisit.getTime());
-    const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    if (dayDiff === 0) return 'Aujourd’hui';
-    else if (dayDiff === 1) return 'Hier';
-    else return `${dayDiff} jours`;
-  }
-
-  getLastVisitDays(dob: string): number {
-    if (!dob) return Infinity;
-    const today = new Date();
-    const lastVisit = new Date(dob);
-    const timeDiff = Math.abs(today.getTime() - lastVisit.getTime());
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'active': return 'Actif';
+      case 'follow up': return 'En Suivi';
+      case 'critical': return 'Urgent';
+      default: return 'Inconnu';
+    }
   }
 
   getStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'status-badge active';
-      case 'follow up':
-        return 'status-badge follow-up';
-      case 'critical':
-        return 'status-badge critical';
-      default:
-        return 'status-badge';
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-700';
+      case 'follow up': return 'bg-yellow-100 text-yellow-700';
+      case 'critical': return 'bg-red-100 text-red-700';
+      default: return 'bg-gray-100 text-gray-700';
     }
+  }
+
+  getLastVisitDate(dob: string): string {
+    if (!dob) return 'Non renseigné';
+    const today = new Date();
+    const lastVisit = new Date(dob);
+    const diffTime = Math.abs(today.getTime() - lastVisit.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+    return diffDays === 0 ? 'Aujourd’hui' : `${diffDays} jours`;
   }
 
   onImageError(event: any) {
     event.target.src = 'https://via.placeholder.com/60x60?text=Erreur ';
+  }
+
+  openAddModal() {
+    this.editingPatient = null;
+    this.newPatient = {
+      id: null,
+      name: '',
+      email: '',
+      phone: '',
+      dob: '',
+      photo: '/assets/images/default-user.png',
+      status: 'active',
+      nationality: '',
+      bloodGroup: '',
+      maritalStatus: '',
+      gender: '',
+      address: ''
+    };
+    this.showAddModal = true;
+  }
+
+  closeAddModal() {
+    this.showAddModal = false;
+  }
+
+  saveNewPatient() {
+    if (!this.newPatient.name || !this.newPatient.email) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    const newId = this.patients.length ? Math.max(...this.patients.map(p => p.id)) + 1 : 1;
+    this.newPatient.id = newId;
+    this.patients.push({ ...this.newPatient });
+    this.applyFilters();
+    this.closeAddModal();
+    alert('Patient ajouté');
+  }
+
+  openEditModal(patient: any) {
+    this.editingPatient = { ...patient };
+    this.newPatient = { ...patient };
+    this.showAddModal = true;
+  }
+
+  updatePatient() {
+    if (!this.editingPatient || !this.editingPatient.id) return;
+
+    const index = this.patients.findIndex(p => p.id === this.editingPatient.id);
+    if (index !== -1) {
+      this.patients[index] = { ...this.newPatient };
+    }
+
+    this.applyFilters();
+    this.showAddModal = false;
+    alert('Patient mis à jour');
+  }
+
+  deletePatient(patient: any) {
+    if (confirm(`Supprimer ${patient.name} ?`)) {
+      this.patients = this.patients.filter(p => p.id !== patient.id);
+      this.applyFilters();
+      alert('Patient supprimé');
+    }
   }
 }

@@ -1,13 +1,13 @@
-<div class="p-6 space-y-6">
+<div class="p-6 space-y-6 bg-gray-50 min-h-screen">
   <!-- Hero Section -->
-  <section class="relative bg-white border border-gray-200 rounded-xl shadow-md p-6 flex justify-between items-center">
+  <section class="relative bg-white border border-gray-200 rounded-xl shadow-md p-6 flex justify-between items-center transition-all duration-300 hover:shadow-lg">
     <div class="welcome-message space-y-1">
-      <h1 class="text-xl md:text-2xl font-bold text-primary">Bienvenue dans votre Espace Santé</h1>
-      <p class="text-sm text-text-light">Dashboard de réception - Vue d'ensemble du cabinet</p>
+      <h1 class="text-xl md:text-2xl font-bold text-blue-600">Bienvenue dans votre Espace Santé</h1>
+      <p class="text-sm text-gray-500">Dashboard de réception - Vue d'ensemble du cabinet</p>
     </div>
-
     <div class="buttons-group flex gap-3">
-      <button class="btn btn-outline px-4 py-2 rounded-lg border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 flex items-center">
+      <button (click)="openNewAppointmentModal()"
+              class="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 flex items-center shadow-sm hover:shadow">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -16,7 +16,9 @@
         </svg>
         Nouveau RDV
       </button>
-      <button class="btn btn-primary px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark font-semibold shadow-sm hover:shadow transition-all duration-300 flex items-center">
+
+      <button (click)="openNewPatientModal()"
+              class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-sm hover:shadow transition-all duration-300 flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
           <circle cx="12" cy="7" r="4"></circle>
           <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
@@ -26,11 +28,11 @@
     </div>
   </section>
 
-  <!-- Advanced Stats Section -->
+  <!-- Stat Cards -->
   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-    <!-- Stat Card - Rendez-vous aujourd'hui -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
-      <div class="bg-blue-500 text-white rounded-full p-3">
+    <!-- Rendez-vous aujourd'hui -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4 cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+      <div class="bg-blue-500 text-white rounded-full p-3 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -38,141 +40,88 @@
           <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
       </div>
-      <div>
+      <div class="flex-grow">
         <p class="text-sm font-medium">Rendez-vous aujourd'hui</p>
         <h3 class="text-2xl font-bold">12</h3>
-        <span class="text-xs text-green-500 font-medium">+8% augmentation</span>
+        <span class="text-xs font-medium text-green-500">+8% augmentation</span>
       </div>
       <div class="border-l-4 border-blue-500 h-full ml-4"></div>
     </div>
 
-    <!-- Stat Card - Patients en attente -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
-      <div class="bg-yellow-500 text-white rounded-full p-3">
+    <!-- Patients en attente -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4 cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+      <div class="bg-yellow-500 text-white rounded-full p-3 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="6" x2="12" y2="12"></line>
           <polyline points="12 12 16 16"></polyline>
         </svg>
       </div>
-      <div>
+      <div class="flex-grow">
         <p class="text-sm font-medium">Patients en attente</p>
         <h3 class="text-2xl font-bold">3</h3>
-        <span class="text-xs text-red-500 font-medium">-2% diminution</span>
+        <span class="text-xs font-medium text-red-500">-2% diminution</span>
       </div>
       <div class="border-l-4 border-yellow-500 h-full ml-4"></div>
     </div>
 
-    <!-- Stat Card - Statut du médecin -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
-      <div class="bg-green-500 text-white rounded-full p-3">
+    <!-- Patients terminés -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4 cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+      <div class="bg-green-500 text-white rounded-full p-3 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <path d="M9 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
-          <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
         </svg>
       </div>
-      <div>
-        <p class="text-sm font-medium">Statut du médecin</p>
-        <h3 class="text-2xl font-bold">Disponible</h3>
-        <span class="bg-green-500 text-white px-2 py-1 rounded-md text-xs">En cabinet</span>
+      <div class="flex-grow">
+        <p class="text-sm font-medium">Patients terminés</p>
+        <h3 class="text-2xl font-bold">25</h3>
+        <span class="text-xs font-medium text-green-500">+5% augmentation</span>
       </div>
       <div class="border-l-4 border-green-500 h-full ml-4"></div>
     </div>
 
-    <!-- Stat Card - Patients cette semaine -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
-      <div class="bg-purple-500 text-white rounded-full p-3">
+    <!-- Patients en retard -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4 cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+      <div class="bg-red-500 text-white rounded-full p-3 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-          <circle cx="12" cy="7" r="4"></circle>
-          <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="6" x2="12" y2="12"></line>
+          <polyline points="12 12 16 16"></polyline>
         </svg>
       </div>
-      <div>
-        <p class="text-sm font-medium">Patients cette semaine</p>
-        <h3 class="text-2xl font-bold">78</h3>
-        <span class="text-xs text-green-500 font-medium">+12% augmentation</span>
+      <div class="flex-grow">
+        <p class="text-sm font-medium">Patients en retard</p>
+        <h3 class="text-2xl font-bold">7</h3>
+        <span class="text-xs font-medium text-red-500">+3% augmentation</span>
       </div>
-      <div class="border-l-4 border-purple-500 h-full ml-4"></div>
+      <div class="border-l-4 border-red-500 h-full ml-4"></div>
     </div>
   </section>
 
   <!-- Planning du Jour -->
-  <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+  <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-section-header ont-semibold">Planning du jour - Dr. Kamal Berrada</h3>
-      <button class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200">
+      <h3 class="text-lg font-semibold">Planning du jour - Dr. Kamal Berrada</h3>
+      <button class="text-xs px-3 py-1 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
         Voir tout
       </button>
     </div>
-
-    <!-- Liste des rendez-vous scrollable -->
-    <div class="overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <div class="overflow-y-auto max-h-[300px]">
       <ul class="space-y-4">
-        <!-- Rendez-vous 1 -->
-        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow">
           <div class="flex items-center space-x-4">
             <div class="bg-blue-500 text-white rounded-full p-3">
               <span class="text-sm font-medium">SM</span>
             </div>
             <div>
               <p class="text-sm font-medium">Salwa Slimani</p>
-              <span class="text-xs text-text-light">Consultation with Dr. Kamal Berrada</span>
+              <span class="text-xs text-gray-500">Consultation avec Dr. Kamal</span>
             </div>
           </div>
           <div class="flex items-center space-x-2">
             <p class="text-sm font-medium">09:00</p>
-            <span class="bg-green-500 text-white px-2 py-1 rounded-md text-xs">Completed</span>
-          </div>
-        </li>
-
-        <!-- Rendez-vous 2 -->
-        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="bg-blue-500 text-white rounded-full p-3">
-              <span class="text-sm font-medium">IT</span>
-            </div>
-            <div>
-              <p class="text-sm font-medium">Imane Tahri</p>
-              <span class="text-xs text-text-light">Suivi with Dr. Kamal Berrada</span>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <p class="text-sm font-medium">10:30</p>
-            <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs">Ongoing</span>
-          </div>
-        </li>
-
-        <!-- Rendez-vous 3 -->
-        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="bg-blue-500 text-white rounded-full p-3">
-              <span class="text-sm font-medium">SB</span>
-            </div>
-            <div>
-              <p class="text-sm font-medium">Sana Barkouch</p>
-              <span class="text-xs text-text-light">Urgence with Dr. Kamal Berrada</span>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <p class="text-sm font-medium">11:45</p>
-            <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs">Upcoming</span>
-          </div>
-        </li>
-
-        <!-- Rendez-vous 4 -->
-        <li class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="bg-blue-500 text-white rounded-full p-3">
-              <span class="text-sm font-medium">IP</span>
-            </div>
-            <div>
-              <p class="text-sm font-medium">Isabelle Petit</p>
-              <span class="text-xs text-text-light">Consultation with Dr. Thomas Leclerc</span>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <p class="text-sm font-medium">14:00</p>
-            <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs">Upcoming</span>
+            <span class="bg-green-500 text-white px-2 py-1 rounded-md text-xs">Terminé</span>
           </div>
         </li>
       </ul>
@@ -182,90 +131,82 @@
   <!-- Main Content Grid -->
   <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Calendar Section -->
-    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-section-header ont-semibold">Calendrier des RDV</h3>
-        <button class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200">
+        <h3 class="text-lg font-semibold">Calendrier des RDV</h3>
+        <button class="text-xs px-3 py-1 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
           + Ajouter
         </button>
       </div>
-      <div class="calendar-placeholder text-center py-12 text-text-muted">
+      <div class="calendar-placeholder text-center py-12 text-gray-400">
         <p>Aucun événement pour cette semaine</p>
       </div>
     </section>
 
     <!-- Appointments List -->
-    <section class="lg:col-span-1 card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-section-header ont-semibold">Prochains Rendez-vous</h3>
-        <button class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200">
+        <h3 class="text-lg font-semibold">Prochains Rendez-vous</h3>
+        <button class="text-xs px-3 py-1 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
           Voir tout
         </button>
       </div>
-      <ul class="appointments-list space-y-4 mt-4">
-        <li *ngFor="let appointment of calendarEvents" class="flex items-center gap-3 p-3 border-b border-border last:border-b-0 hover:bg-gray-50 rounded-md transition-colors duration-200 cursor-pointer">
+      <ul class="space-y-4 mt-4">
+        <li *ngFor="let appointment of calendarEvents"
+            class="flex items-center gap-3 p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 rounded-md transition-colors duration-200 cursor-pointer">
           <img [src]="appointment.photo" alt="{{ appointment.title }}" class="w-10 h-10 rounded-full object-cover" (error)="onImageError($event)" />
           <div>
             <span class="block font-medium">{{ appointment.title }}</span>
-            <span class="text-xs text-text-light">{{ appointment.time }}</span>
+            <span class="text-xs text-gray-500">{{ appointment.time }}</span>
           </div>
         </li>
       </ul>
     </section>
 
     <!-- Chart Section -->
-    <section class="lg:col-span-1 card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-section-header ont-semibold">Statistiques des RDV</h3>
-        <select class="filter-select border border-border rounded-md px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary">
-          <option>Semaine</option>
-          <option selected>Mois</option>
-          <option>Année</option>
-        </select>
-      </div>
-      <div class="chart-container h-40 flex items-center justify-center">
-        <canvas id="appointments-chart" class="w-full h-full"></canvas>
-      </div>
+    <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
+      <h3 class="text-lg font-semibold mb-4">Statistiques des RDV</h3>
+      <canvas id="appointments-chart" class="w-full h-40"></canvas>
     </section>
 
     <!-- Weekly Overview -->
-    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-section-header ont-semibold">WEEKLY OVERVIEW</h3>
-        <span class="date-range text-xs text-text-muted">May 2 - May 8</span>
+        <h3 class="text-lg font-semibold">WEEKLY OVERVIEW</h3>
+        <span class="date-range text-xs text-gray-500">May 2 - May 8</span>
       </div>
       <div class="chart-container h-40 mb-6 flex items-center justify-center">
         <canvas id="weekly-overview-chart" class="w-full h-full"></canvas>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
-          <p class="text-xs text-text-light">TOTAL APPOINTMENTS</p>
-          <h4 class="font-bold text-text-dark">32</h4>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
+          <p class="text-xs text-gray-500">TOTAL APPOINTMENTS</p>
+          <h4 class="font-bold text-gray-800">32</h4>
           <span class="change-indicator up text-green-500 text-xs">↑ 8%</span>
         </div>
-        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
-          <p class="text-xs text-text-light">OPEN SLOTS</p>
-          <h4 class="font-bold text-text-dark">5</h4>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
+          <p class="text-xs text-gray-500">OPEN SLOTS</p>
+          <h4 class="font-bold text-gray-800">5</h4>
           <span class="change-indicator down text-red-500 text-xs">↓ 2%</span>
         </div>
-        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
-          <p class="text-xs text-text-light">FOLLOW-UPS</p>
-          <h4 class="font-bold text-text-dark">7</h4>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
+          <p class="text-xs text-gray-500">FOLLOW-UPS</p>
+          <h4 class="font-bold text-gray-800">7</h4>
           <span class="change-indicator neutral text-gray-500 text-xs">→ 0%</span>
         </div>
-        <div class="stat-card-mini p-3 border border-border rounded-lg bg-gray-50 hover:bg-primary-light/10 transition-colors">
-          <p class="text-xs text-text-light">NEW PATIENTS</p>
-          <h4 class="font-bold text-text-dark">6</h4>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
+          <p class="text-xs text-gray-500">NEW PATIENTS</p>
+          <h4 class="font-bold text-gray-800">6</h4>
           <span class="change-indicator up text-green-500 text-xs">↑ 12%</span>
         </div>
       </div>
     </section>
 
     <!-- Patient Demographics -->
-    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-section-header font-semibold">PATIENT DEMOGRAPHICS</h3>
-        <span class="badge bg-primary text-white text-xs px-2 py-1 rounded-full">1,248 Total</span>
+        <h3 class="text-lg font-semibold">PATIENT DEMOGRAPHICS</h3>
+        <span class="badge bg-blue-600 text-white text-xs px-2 py-1 rounded-full">1,248 Total</span>
       </div>
       <div class="chart-container h-40 mb-4 flex items-center justify-center">
         <canvas id="gender-distribution-chart" class="w-full h-full"></canvas>
@@ -280,17 +221,143 @@
           Men (60%) - 749
         </div>
       </div>
-      <a href="#" class="btn btn-outline text-xs px-3 py-1 rounded-md hover:bg-primary-light hover:text-white transition-colors duration-200 block text-center">
+      <a href="#" class="btn btn-outline block text-center text-xs px-3 py-1 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
         View Demographics
       </a>
     </section>
 
     <!-- Age Distribution -->
-    <section class="card glass-effect p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <h3 class="text-section-header font-semibold mb-4">AGE DISTRIBUTION</h3>
+    <section class="bg-white border border-gray-200 backdrop-blur-sm bg-opacity-80 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6">
+      <h3 class="text-lg font-semibold mb-4">AGE DISTRIBUTION</h3>
       <div class="chart-container h-40 flex items-center justify-center">
         <canvas id="age-distribution-chart" class="w-full h-full"></canvas>
       </div>
     </section>
   </main>
+
+  <!-- Formulaire : Nouveau RDV -->
+  <div *ngIf="showAppointmentForm"
+       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
+    <div class="bg-white rounded-xl p-6 w-11/12 md:w-1/2 shadow-2xl transform transition-all animate-scaleIn">
+      <h2 class="text-xl font-bold mb-4">Ajouter un Rendez-vous</h2>
+      <form (submit)="submitAppointment($event)" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nom du patient</label>
+          <input type="text" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Date</label>
+          <input type="date" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Heure</label>
+          <input type="time" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Médecin</label>
+          <select class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500">
+            <option>Dr. Kamal Berrada</option>
+            <option>Dr. Imane Tahri</option>
+            <option>Dr. Mohammed El Amrani</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" (click)="closeModals()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Formulaire : Nouveau Patient -->
+  <div *ngIf="showPatientForm"
+       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
+    <div class="bg-white rounded-xl p-6 w-11/12 md:w-1/2 shadow-2xl transform transition-all animate-scaleIn">
+      <h2 class="text-xl font-bold mb-4">Ajouter un Nouveau Patient</h2>
+      <form (submit)="submitPatient($event)" class="space-y-4">
+        <!-- Nom -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nom</label>
+          <input type="text" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+
+        <!-- Prénom -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Prénom</label>
+          <input type="text" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+
+        <!-- Téléphone -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Téléphone</label>
+          <input type="tel" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" required
+                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500" />
+        </div>
+
+        <!-- Nationalité -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nationalité</label>
+          <select required
+                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500">
+            <option value="" disabled selected>Choisir une nationalité</option>
+            <option value="marocaine">Marocaine</option>
+            <option value="française">Française</option>
+            <option value="algérienne">Algérienne</option>
+            <option value="tunisienne">Tunisienne</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+
+        <!-- Groupe Sanguin -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Type de Sang</label>
+          <select required
+                  class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500">
+            <option value="" disabled selected>Choisir un groupe sanguin</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+
+        <!-- Adresse -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Adresse</label>
+          <textarea rows="2"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"></textarea>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" (click)="closeModals()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

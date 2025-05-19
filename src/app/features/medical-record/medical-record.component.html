@@ -1,56 +1,54 @@
 <div class="p-6 space-y-8">
-  <!-- Header -->
+  <!-- Header unifié avec bouton ajout -->
   <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 flex justify-between items-center">
-    <div class="header-content">
+    <div>
       <h2 class="text-xl font-bold text-primary">Gestion des Dossiers Médicaux</h2>
       <p class="text-sm text-text-light mt-1">Suivez les informations des patients en temps réel.</p>
     </div>
-
-    <div class="header-actions flex items-center gap-4">
-      <button class="btn btn-primary px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]">
+    <div class="flex items-center gap-4">
+      <button
+        (click)="openAddModal()"
+        class="btn btn-primary px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.01]">
         + Nouveau Patient
       </button>
-
-      <!-- Toggle Vue Grille / Liste -->
-      <div class="view-toggle flex items-center gap-2 text-sm font-medium">
-        <span [class.text-primary]="currentView === 'grid'" class="cursor-pointer transition-colors duration-200 hover:text-primary">Grille</span>
+      <div class="flex items-center gap-2 text-sm font-medium">
+        <span [class.text-primary]="currentView === 'grid'" class="cursor-pointer hover:text-primary" (click)="isListView = false; toggleView()">
+          Grille
+        </span>
         <label class="inline-flex items-center cursor-pointer">
           <input type="checkbox" [(ngModel)]="isListView" (change)="toggleView()" class="sr-only peer">
           <div class="relative w-11 h-6 bg-gray-300 peer-focus:ring-2 peer-focus:ring-primary rounded-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:bg-primary"></div>
         </label>
-        <span [class.text-primary]="currentView === 'list'" class="cursor-pointer transition-colors duration-200 hover:text-primary">Liste</span>
+        <span [class.text-primary]="currentView === 'list'" class="cursor-pointer hover:text-primary" (click)="isListView = true; toggleView()">
+          Liste
+        </span>
       </div>
     </div>
   </section>
 
   <!-- Filtres -->
   <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 glass-effect">
-    <div class="filter-row grid grid-cols-1 md:grid-cols-3 gap-4">
-      <!-- Recherche -->
-      <div class="filter-group">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
         <label class="block text-sm font-medium text-text-dark mb-2">Rechercher</label>
         <input type="text"
                placeholder="Nom, ID..."
                [(ngModel)]="searchQuery"
                (input)="applyFilters()"
-               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-colors duration-300" />
+               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-colors duration-300">
       </div>
-
-      <!-- Statut -->
-      <div class="filter-group">
+      <div>
         <label class="block text-sm font-medium text-text-dark mb-2">Statut</label>
         <select [(ngModel)]="selectedStatus"
                 (change)="applyFilters()"
                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-colors duration-300">
           <option value="">Tous les statuts</option>
-          <option value="active">Active</option>
-          <option value="follow up">Follow up</option>
-          <option value="critical">Critical</option>
+          <option value="active">Actif</option>
+          <option value="follow up">En suivi</option>
+          <option value="critical">Urgent</option>
         </select>
       </div>
-
-      <!-- Dernière Visite -->
-      <div class="filter-group">
+      <div>
         <label class="block text-sm font-medium text-text-dark mb-2">Dernière visite</label>
         <select [(ngModel)]="selectedVisitFilter"
                 (change)="applyFilters()"
@@ -70,43 +68,37 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <div *ngFor="let patient of filteredPatients"
            class="patient-card bg-white border border-gray-100 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 transform">
-
-        <!-- En-tête du patient -->
         <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 flex items-center gap-3">
-          <img [src]="patient.photo" alt="Photo de {{ patient.name }}" (error)="onImageError($event)" class="w-14 h-14 rounded-full object-cover shadow-sm" />
-          <div class="info">
+          <img [src]="patient.photo" alt="Photo de {{ patient.name }}" (error)="onImageError($event)"
+               class="w-14 h-14 rounded-full object-cover shadow-sm">
+          <div>
             <h3 class="font-semibold text-text-dark">{{ patient.name }}</h3>
             <p class="text-xs text-text-light truncate max-w-[180px]">{{ patient.email }}</p>
           </div>
         </div>
-
-        <!-- Informations -->
         <div class="p-4 space-y-2">
           <p class="text-sm"><strong>ID :</strong> #{{ patient.id }}</p>
           <p class="text-sm"><strong>Téléphone :</strong> {{ patient.phone || 'Non renseigné' }}</p>
           <p class="text-sm"><strong>Date de naissance :</strong> {{ patient.dob || 'Non renseignée' }}</p>
+          <p class="text-sm"><strong>Nationalité :</strong> {{ patient.nationality || 'Non renseignée' }}</p>
+          <p class="text-sm"><strong>Groupe sanguin :</strong> {{ patient.bloodGroup || 'Non renseigné' }}</p>
+          <p class="text-sm"><strong>État civil :</strong> {{ patient.maritalStatus || 'Non renseigné' }}</p>
+          <p class="text-sm"><strong>Sexe :</strong> {{ patient.gender || 'Non renseigné' }}</p>
+          <p class="text-sm"><strong>Adresse :</strong> {{ patient.address || 'Non renseignée' }}</p>
         </div>
-
-        <!-- Actions -->
         <div class="p-4 pt-0 flex justify-end gap-2">
-          <button class="btn-action btn-edit text-blue-500 hover:text-blue-700 hover:bg-blue-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200" title="Modifier">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+          <button title="Modifier" (click)="openEditModal(patient)" class="btn-action btn-edit inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800 transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7"></path>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-5 1-1 5L2.3 18.3a2.122 2.122 0 0 1-.3-3.1L11 4z"></path>
             </svg>
           </button>
-          <button class="btn-action btn-delete text-red-500 hover:text-red-700 hover:bg-red-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200" title="Supprimer">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+          <button title="Supprimer" (click)="deletePatient(patient)" class="btn-action btn-delete inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               <line x1="9" y1="10" x2="9" y2="18"></line>
               <line x1="15" y1="10" x2="15" y2="18"></line>
-            </svg>
-          </button>
-          <button class="btn-action btn-view text-green-500 hover:text-green-700 hover:bg-green-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200" title="Voir le dossier">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
             </svg>
           </button>
         </div>
@@ -122,6 +114,11 @@
           <tr class="text-sm text-text-dark uppercase tracking-wider">
             <th scope="col" class="px-6 py-3">#ID</th>
             <th scope="col" class="px-6 py-3">Patient</th>
+            <th scope="col" class="px-6 py-3">Nationalité</th>
+            <th scope="col" class="px-6 py-3">Groupe sanguin</th>
+            <th scope="col" class="px-6 py-3">État civil</th>
+            <th scope="col" class="px-6 py-3">Sexe</th>
+            <th scope="col" class="px-6 py-3">Adresse</th>
             <th scope="col" class="px-6 py-3">Dernière Visite</th>
             <th scope="col" class="px-6 py-3">Statut</th>
             <th scope="col" class="px-6 py-3">Actions</th>
@@ -129,55 +126,125 @@
         </thead>
         <tbody class="divide-y divide-gray-200">
           <tr *ngFor="let patient of filteredPatients"
-                class="hover:bg-gray-50 transition-colors duration-200 group">
-            <!-- ID -->
+                class="hover:bg-gray-50 group transition-colors duration-200">
             <td class="px-6 py-4 whitespace-nowrap">#{{ patient.id }}</td>
-
-            <!-- Patient -->
             <td class="px-6 py-4 whitespace-nowrap flex items-center gap-3">
-              <img [src]="patient.photo" alt="Photo" class="w-10 h-10 rounded-full object-cover shadow-sm" (error)="onImageError($event)" />
-              <span class="font-medium text-text-dark group-hover:text-primary transition-colors">{{ patient.name }}</span>
+              <img [src]="patient.photo" (error)="onImageError($event)" class="w-10 h-10 rounded-full object-cover shadow-sm">
+              <span class="font-medium text-text-dark group-hover:text-primary transition-colors">
+                {{ patient.name }}<br>
+                <span class="text-xs text-gray-500">{{ patient.email }}</span>
+              </span>
             </td>
-
-            <!-- Dernière Visite -->
+            <td class="px-6 py-4 whitespace-nowrap">{{ patient.nationality || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ patient.bloodGroup || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ patient.maritalStatus || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ patient.gender || '-' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ patient.address || '-' }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
               {{ getLastVisitDate(patient.dob) }}
             </td>
-
-            <!-- Statut -->
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="status-badge inline-block px-3 py-1 rounded-full text-xs font-medium capitalize" 
-                    [class]="getStatusClass(patient.status)">
-                {{ patient.status }}
+                    [class.bg-green-100.text-green-700]="patient.status === 'active'"
+                    [class.bg-yellow-100.text-yellow-700]="patient.status === 'follow up'"
+                    [class.bg-red-100.text-red-700]="patient.status === 'critical'">
+                {{ getStatusLabel(patient.status) }}
               </span>
             </td>
-
-            <!-- Actions -->
             <td class="px-6 py-4 whitespace-nowrap flex gap-3">
-              <button class="btn-edit text-blue-500 hover:text-blue-700 hover:bg-blue-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200" title="Modifier">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+              <button (click)="openEditModal(patient)" title="Modifier" class="btn-edit btn-action w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 mx-auto">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-5 1-1 5L2.3 18.3a2.122 2.122 0 0 1-.3-3.1L11 4z"></path>
                 </svg>
               </button>
-              <button class="btn-delete text-red-500 hover:text-red-700 hover:bg-red-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200" title="Supprimer">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+              <button (click)="deletePatient(patient)" title="Supprimer" class="btn-delete btn-action w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 mx-auto">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                   <line x1="9" y1="10" x2="9" y2="18"></line>
                   <line x1="15" y1="10" x2="15" y2="18"></line>
                 </svg>
               </button>
-              <button class="btn-view text-green-500 hover:text-green-700 hover:bg-green-50 w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200" title="Voir le dossier">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Modale : Ajout ou Édition -->
+  <div *ngIf="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fadeIn">
+      <button (click)="closeAddModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+      <form (ngSubmit)="editingPatient ? updatePatient() : saveNewPatient()">
+        <h3 class="text-lg font-bold mb-4 text-indigo-700">{{ editingPatient ? 'Modifier' : 'Ajouter' }} un Patient</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            <input type="text" required [(ngModel)]="newPatient.name" name="name"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" required [(ngModel)]="newPatient.email" name="email"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+            <input type="text" [(ngModel)]="newPatient.phone" name="phone"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+            <input type="date" [(ngModel)]="newPatient.dob" name="dob"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nationalité</label>
+            <input type="text" [(ngModel)]="newPatient.nationality" name="nationality"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Groupe sanguin</label>
+            <input type="text" [(ngModel)]="newPatient.bloodGroup" name="bloodGroup"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">État civil</label>
+            <input type="text" [(ngModel)]="newPatient.maritalStatus" name="maritalStatus"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
+            <select [(ngModel)]="newPatient.gender" name="gender"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+              <option value="">Sélectionner</option>
+              <option value="Homme">Homme</option>
+              <option value="Femme">Femme</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+            <input type="text" [(ngModel)]="newPatient.address" name="address"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+            <select [(ngModel)]="newPatient.status" name="status"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:border-blue-500">
+              <option value="active">Actif</option>
+              <option value="follow up">En Suivi</option>
+              <option value="critical">Urgent</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-4">
+          <button type="button" (click)="closeAddModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">Sauvegarder</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

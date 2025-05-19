@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LayoutComponent } from './core/layout/layout/layout.component'; // autonome
+import { LayoutComponent } from './core/layout/layout/layout.component';
+import { ContactComponent } from './core/contact/contact.component'; // 👈 Ajoute cet import
 
 const routes: Routes = [
   {
     path: '',
-    component: LayoutComponent, // Layout contenant le <router-outlet>
+    component: LayoutComponent,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -42,6 +43,10 @@ const routes: Routes = [
         path: 'profile',
         loadChildren: () =>
           import('./features/profile/profile.module').then(m => m.ProfileModule)
+      },
+      {
+        path: 'contact', // 👈 Ajoute cette route
+        component: ContactComponent
       }
     ]
   }

@@ -21,6 +21,18 @@ export class BillsComponent {
     { id: 5, patientName: 'Sana', amount: 90, status: 'overdue', date: '2025-04-06', description: 'Suivi médical' }
   ];
 
+  showModal = false;
+  modalMode: 'add' | 'edit' | 'view' = 'add';
+  selectedInvoice: any = null;
+  newInvoice: any = {
+    id: null,
+    patientName: '',
+    amount: null,
+    status: 'pending',
+    date: '',
+    description: ''
+  };
+
   get filteredInvoices() {
     return this.invoices.filter(invoice => {
       const matchesSearch = this.searchQuery
@@ -39,13 +51,65 @@ export class BillsComponent {
   getStatusClass(status: string): string {
     switch (status.toLowerCase()) {
       case 'paid':
-        return 'status-badge status-paid';
+        return 'bg-green-100 text-green-700 border-green-300';
       case 'pending':
-        return 'status-badge status-pending';
+        return 'bg-yellow-100 text-yellow-700 border-yellow-300';
       case 'overdue':
-        return 'status-badge status-overdue';
+        return 'bg-red-100 text-red-700 border-red-300';
       default:
-        return 'status-badge';
+        return 'bg-gray-100 text-gray-700 border-gray-300';
+    }
+  }
+
+  openAddModal() {
+    this.modalMode = 'add';
+    this.newInvoice = {
+      id: null,
+      patientName: '',
+      amount: null,
+      status: 'pending',
+      date: '',
+      description: ''
+    };
+    this.showModal = true;
+  }
+
+  openEditModal(invoice: any) {
+    this.modalMode = 'edit';
+    this.newInvoice = { ...invoice };
+    this.showModal = true;
+  }
+
+  openViewModal(invoice: any) {
+    this.modalMode = 'view';
+    this.selectedInvoice = invoice;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedInvoice = null;
+  }
+
+  saveInvoice() {
+    if (!this.newInvoice.patientName || !this.newInvoice.amount || !this.newInvoice.date) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+    if (this.modalMode === 'add') {
+      const newId = this.invoices.length ? Math.max(...this.invoices.map(i => i.id)) + 1 : 1;
+      this.newInvoice.id = newId;
+      this.invoices.push({ ...this.newInvoice });
+    } else if (this.modalMode === 'edit') {
+      const idx = this.invoices.findIndex(i => i.id === this.newInvoice.id);
+      if (idx !== -1) this.invoices[idx] = { ...this.newInvoice };
+    }
+    this.closeModal();
+  }
+
+  deleteInvoice(invoice: any) {
+    if (confirm(`Supprimer la facture #${invoice.id} ?`)) {
+      this.invoices = this.invoices.filter(i => i.id !== invoice.id);
     }
   }
 }
