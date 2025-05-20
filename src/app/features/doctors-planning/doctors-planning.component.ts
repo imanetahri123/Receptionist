@@ -22,10 +22,6 @@ export class DoctorsPlanningComponent implements AfterViewInit {
   showEventModal = false;
   selectedDate = '';
 
-  // Pour la modale d'édition
-  editEventModal = false;
-  eventToEdit: any = null;
-
   views = [
     { value: 'dayGridMonth', label: 'Mois' },
     { value: 'timeGridWeek', label: 'Semaine' },
@@ -68,14 +64,7 @@ export class DoctorsPlanningComponent implements AfterViewInit {
     'Autre'
   ];
 
-  newEvent = {
-    title: '',
-    patient: '',
-    type: 'Consultation',
-    date: '',
-    time: '09:00',
-    duration: 30
-  };
+  editingEvent: any = null; // Sert pour ajout ET édition
 
   @ViewChild('calendarEl') calendarEl!: ElementRef<HTMLElement>;
   private calendar!: Calendar;
@@ -156,7 +145,7 @@ export class DoctorsPlanningComponent implements AfterViewInit {
     const startTime = selectInfo.start.toTimeString().substring(0, 5);
     const duration = (selectInfo.end.getTime() - selectInfo.start.getTime()) / 60000;
 
-    this.newEvent = {
+    this.editingEvent = {
       title: '',
       patient: '',
       type: 'Consultation',
@@ -169,14 +158,13 @@ export class DoctorsPlanningComponent implements AfterViewInit {
     this.calendar.unselect();
   }
 
-  // Ouvre la modale d'édition quand on clique sur un événement
   handleEventClick(clickInfo: any): void {
     const [typeTitle, patient] = clickInfo.event.title.split(' - ');
     const typeMatch = typeTitle.match(/^\[(.*?)\]/);
     const type = typeMatch ? typeMatch[1] : 'Consultation';
     const title = typeTitle.replace(/^\[.*?\]\s?/, '');
 
-    this.eventToEdit = {
+    this.editingEvent = {
       event: clickInfo.event,
       title,
       patient: patient || '',
@@ -185,12 +173,12 @@ export class DoctorsPlanningComponent implements AfterViewInit {
       time: clickInfo.event.startStr.split('T')[1]?.substring(0,5) || '09:00',
       duration: (new Date(clickInfo.event.endStr).getTime() - new Date(clickInfo.event.startStr).getTime()) / 60000
     };
-    this.editEventModal = true;
+    this.showEventModal = true;
   }
 
   openAddEventModal(): void {
     const currentDate = new Date().toISOString().split('T')[0];
-    this.newEvent = {
+    this.editingEvent = {
       title: '',
       patient: '',
       type: 'Consultation',
@@ -203,19 +191,20 @@ export class DoctorsPlanningComponent implements AfterViewInit {
 
   closeAddEventModal(): void {
     this.showEventModal = false;
+    this.editingEvent = null;
   }
 
   addNewEvent(): void {
-    if (!this.newEvent.title || !this.newEvent.patient || !this.newEvent.date || !this.newEvent.time) {
+    if (!this.editingEvent.title || !this.editingEvent.patient || !this.editingEvent.date || !this.editingEvent.time) {
       alert('Veuillez remplir tous les champs.');
       return;
     }
 
-    const start = new Date(`${this.newEvent.date}T${this.newEvent.time}`);
-    const end = new Date(start.getTime() + this.newEvent.duration * 60000);
+    const start = new Date(`${this.editingEvent.date}T${this.editingEvent.time}`);
+    const end = new Date(start.getTime() + this.editingEvent.duration * 60000);
 
     this.calendar.addEvent({
-      title: `[${this.newEvent.type}] ${this.newEvent.title} - ${this.newEvent.patient}`,
+      title: `[${this.editingEvent.type}] ${this.editingEvent.title} - ${this.editingEvent.patient}`,
       start: start.toISOString(),
       end: end.toISOString(),
       backgroundColor: '#6366f1',
@@ -225,31 +214,25 @@ export class DoctorsPlanningComponent implements AfterViewInit {
     this.closeAddEventModal();
   }
 
-  // --- MODALE EDITION ---
-  closeEditEventModal() {
-    this.editEventModal = false;
-    this.eventToEdit = null;
-  }
-
-  saveEditEvent() {
-    if (!this.eventToEdit.title || !this.eventToEdit.patient || !this.eventToEdit.date || !this.eventToEdit.time) {
+  updateEvent(): void {
+    if (!this.editingEvent.title || !this.editingEvent.patient || !this.editingEvent.date || !this.editingEvent.time) {
       alert('Veuillez remplir tous les champs.');
       return;
     }
-    const start = new Date(`${this.eventToEdit.date}T${this.eventToEdit.time}`);
-    const end = new Date(start.getTime() + this.eventToEdit.duration * 60000);
+    const start = new Date(`${this.editingEvent.date}T${this.editingEvent.time}`);
+    const end = new Date(start.getTime() + this.editingEvent.duration * 60000);
 
-    this.eventToEdit.event.setProp('title', `[${this.eventToEdit.type}] ${this.eventToEdit.title} - ${this.eventToEdit.patient}`);
-    this.eventToEdit.event.setStart(start.toISOString());
-    this.eventToEdit.event.setEnd(end.toISOString());
+    this.editingEvent.event.setProp('title', `[${this.editingEvent.type}] ${this.editingEvent.title} - ${this.editingEvent.patient}`);
+    this.editingEvent.event.setStart(start.toISOString());
+    this.editingEvent.event.setEnd(end.toISOString());
 
-    this.closeEditEventModal();
+    this.closeAddEventModal();
   }
 
   deleteEditEvent() {
-    if (confirm('Voulez-vous vraiment supprimer ce rendez-vous ?')) {
-      this.eventToEdit.event.remove();
-      this.closeEditEventModal();
+    if (this.editingEvent && this.editingEvent.event && confirm('Voulez-vous vraiment supprimer ce rendez-vous ?')) {
+      this.editingEvent.event.remove();
+      this.closeAddEventModal();
     }
   }
 

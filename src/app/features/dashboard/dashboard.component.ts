@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, NgClass } from '@angular/common';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -7,37 +7,81 @@ import Chart from 'chart.js/auto';
   standalone: true,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: [NgFor, NgIf]
+  imports: [NgFor, NgIf, NgClass]
 })
 export class DashboardComponent implements AfterViewInit {
 
-  // Liste des événements pour les rendez-vous
+  todayAppointments = 12;
+  pendingPatients = 3;
+  finishedPatients = 25;
+  latePatients = 7;
+
+  // Liste complète des rendez-vous du jour
+  todayAppointmentsList = [
+    {
+      initials: 'SM',
+      name: 'Salwa Slimani',
+      type: 'Consultation',
+      doctor: 'Dr. Kamal',
+      time: '09:00',
+      status: 'completed'
+    },
+    {
+      initials: 'MH',
+      name: 'Mohamed Hariri',
+      type: 'Contrôle',
+      doctor: 'Dr. Kamal',
+      time: '10:30',
+      status: 'upcoming'
+    },
+    {
+      initials: 'FA',
+      name: 'Fatima Amrani',
+      type: 'Consultation',
+      doctor: 'Dr. Kamal',
+      time: '11:15',
+      status: 'late'
+    }
+  ];
+
+  // Getter pour n'afficher que les rendez-vous à venir
+  get upcomingAppointments() {
+    return this.todayAppointmentsList.filter(a => a.status === 'upcoming');
+  }
+
+  selectedStat: string | null = null;
+  openStatModal(stat: string) { this.selectedStat = stat; }
+  closeStatModal() { this.selectedStat = null; }
+
   calendarEvents = [
     { title: 'Dr. Imane - Mr. Kamal', time: '10:00', photo: 'assets/images/doctor5.jpg' },
     { title: 'Dr. Mehdi - Mme. Hilal', time: '11:30', photo: 'assets/images/doctor1.jpg' },
     { title: 'Dr. Mohammed - M. Walid', time: '14:00', photo: 'assets/images/doctor3.jpg' }
   ];
 
-  // Variables pour les modales
   showAppointmentForm = false;
   showPatientForm = false;
-  isModalOpen = false;
-  modalTitle = '';
-  modalChartData: number[] = [];
 
   ngAfterViewInit(): void {
-    this.initRdvChart();           // Rendez-vous par jour
-    this.initGenderChart();        // Répartition Hommes/Femmes
-    this.initAgeChart();           // Répartition par âge
-    this.initWeeklyOverviewChart(); // Vue hebdomadaire
+    this.initRdvChart();
+    this.initGenderChart();
+    this.initAgeChart();
+    this.initWeeklyOverviewChart();
   }
 
-  // -------------------------------------------------------------------------------------------------
-  // Graphique à barres : Rendez-vous par jour
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'completed': return 'Terminé';
+      case 'upcoming': return 'À venir';
+      case 'late': return 'En retard';
+      default: return status;
+    }
+  }
+
+  // Graphiques (tu peux garder ou adapter ces méthodes selon ton besoin)
   initRdvChart() {
     const ctx = document.getElementById('appointments-chart') as HTMLCanvasElement;
     if (!ctx) return;
-
     new Chart(ctx, {
       type: 'bar',
       data: {
@@ -63,12 +107,9 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-  // -------------------------------------------------------------------------------------------------
-  // Graphique circulaire (Donut) : Démographie des patients (Hommes/Femmes)
   initGenderChart() {
     const genderCtx = document.getElementById('gender-distribution-chart') as HTMLCanvasElement;
     if (!genderCtx) return;
-
     new Chart(genderCtx, {
       type: 'doughnut',
       data: {
@@ -96,12 +137,9 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-  // -------------------------------------------------------------------------------------------------
-  // Graphique à barres horizontales : Répartition par âge
   initAgeChart() {
     const ageCtx = document.getElementById('age-distribution-chart') as HTMLCanvasElement;
     if (!ageCtx) return;
-
     new Chart(ageCtx, {
       type: 'bar',
       data: {
@@ -138,12 +176,9 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-  // -------------------------------------------------------------------------------------------------
-  // Graphique hebdomadaire : Aperçu hebdomadaire
   initWeeklyOverviewChart() {
     const weeklyCtx = document.getElementById('weekly-overview-chart') as HTMLCanvasElement;
     if (!weeklyCtx) return;
-
     new Chart(weeklyCtx, {
       type: 'bar',
       data: {
@@ -180,101 +215,22 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
-  // -------------------------------------------------------------------------------------------------
-  // Méthode pour ouvrir la modale avec données dynamiques
-  openModal(type: string): void {
-    switch (type) {
-      case 'appointments':
-        this.modalTitle = 'Rendez-vous par Jour';
-        this.modalChartData = [5, 7, 3, 6, 4];
-        break;
-      case 'patients':
-        this.modalTitle = 'Statistiques Patients';
-        this.modalChartData = [25, 3, 12, 7];
-        break;
-      default:
-        this.modalTitle = 'Détails';
-        this.modalChartData = [0, 0];
-    }
-
-    this.isModalOpen = true;
-
-    setTimeout(() => {
-      this.initModalChart();
-    }, 100);
-  }
-
-  // -------------------------------------------------------------------------------------------------
-  // Graphique dans la modale
-  initModalChart(): void {
-    const modalCtx = document.getElementById('modal-chart') as HTMLCanvasElement;
-    if (!modalCtx) return;
-
-    // Si un graphique existait déjà, on le détruit
-    const existingChart = Chart.getChart(modalCtx);
-    if (existingChart) {
-      existingChart.destroy();
-    }
-
-    new Chart(modalCtx, {
-      type: 'line',
-      data: {
-        labels: ['Semaine dernière', 'Cette semaine'],
-        datasets: [{
-          label: this.modalTitle,
-          data: this.modalChartData,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.2)',
-          tension: 0.4,
-          fill: true,
-          pointRadius: 4,
-          pointBackgroundColor: '#3b82f6'
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (context) => `${context.label}: ${context.parsed.y}`
-            }
-          }
-        },
-        scales: {
-          y: { beginAtZero: true }
-        }
-      }
-    });
-  }
-
-  // -------------------------------------------------------------------------------------------------
-  // Fermer la modale
-  closeModal(): void {
-    this.isModalOpen = false;
-  }
-
-  // -------------------------------------------------------------------------------------------------
-  // Ouvrir les formulaires modaux
+  // Formulaires modaux
   openNewAppointmentModal(): void {
     this.showAppointmentForm = true;
   }
-
   openNewPatientModal(): void {
     this.showPatientForm = true;
   }
-
   closeModals(): void {
     this.showAppointmentForm = false;
     this.showPatientForm = false;
   }
-
   submitAppointment(event: Event): void {
     event.preventDefault();
     alert('Rendez-vous enregistré avec succès !');
     this.closeModals();
   }
-
   submitPatient(event: Event): void {
     event.preventDefault();
     alert('Patient ajouté avec succès !');
@@ -283,6 +239,6 @@ export class DashboardComponent implements AfterViewInit {
 
   // Gestion des erreurs d'image
   onImageError(event: any): void {
-    event.target.src = 'https://via.placeholder.com/60x60?text=Erreur ';
+    event.target.src = 'https://via.placeholder.com/60x60?text=Erreur';
   }
 }

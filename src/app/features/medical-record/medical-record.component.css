@@ -2,7 +2,6 @@
 .patient-card {
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
-
 .patient-card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
@@ -18,19 +17,15 @@
   border-radius: 50%;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-
 .btn-edit {
   background-color: #f0f8ff;
 }
-
 .btn-edit:hover {
   background-color: #e0ffff;
 }
-
 .btn-delete {
   background-color: #ffe4e1;
 }
-
 .btn-delete:hover {
   background-color: #ffcccc;
 }
@@ -47,7 +42,6 @@
   justify-content: center;
   align-items: center;
 }
-
 .modal-content {
   background-color: #fff;
   padding: 2rem;
@@ -61,7 +55,6 @@
 .fadeIn {
   animation: fadeIn 0.3s ease;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -72,3 +65,7 @@
     transform: translateY(0);
   }
 }
+/* Glassmorphism, ombres douces, transitions */
+.bg-white\/70 { background: rgba(255,255,255,0.7); }
+.bg-indigo-50\/80 { background: rgba(238,242,255,0.8); }
+.animate-fadeIn { animation: fadeIn 0.5s; }
