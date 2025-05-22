@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AppointmentService } from '../../services/appointment.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appointments',
@@ -14,60 +16,54 @@ export class AppointmentsComponent implements OnInit {
   selectedStatus = '';
   selectedDate = '';
   appointments: any[] = [];
-
   editingAppointment: any = null;
   selectedAppointment: any = null;
 
-  // Formulaire d’ajout
-  showAddModal: boolean = false;
-  newAppointment: any = {
-    id: null,
-    patient: '',
-    time: '',
-    type: '',
-    status: 'upcoming',
-    reminder: ''
-  };
+  // Pagination
+  itemsPerPage = 5;
+  currentPage = 1;
 
-  constructor() {}
+  constructor(
+    private appointmentService: AppointmentService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadAppointments();
   }
 
+  goToPlanning() {
+    this.router.navigate(['/doctors-planning']);
+  }
+
   loadAppointments() {
     const filters: any = {};
-    if (this.selectedStatus) filters.status = this.selectedStatus;
-    if (this.searchQuery) filters.patient = this.searchQuery;
+    if (this.selectedStatus) filters.statut = this.getSelectedStatusLabel();
+    if (this.searchQuery) filters.search = this.searchQuery;
     if (this.selectedDate) filters.date = this.selectedDate;
 
-    // Simule un chargement depuis l'API
-    this.appointments = [
-      {
-        id: 1,
-        time: '10:00 AM',
-        patient: 'Salwa Slimani',
-        type: 'Consultation',
-        status: 'upcoming',
-        reminder: 'Rappel envoyé'
+    this.appointmentService.getAppointments(filters).subscribe(
+      (response: any) => {
+        this.appointments = (response.data || []).map((rdv: any) => ({
+          ...rdv,
+          patient: rdv.nom_patient,
+          prenom: rdv.prenom_patient,
+          time: rdv.date_heure,
+          status: this.mapStatusToBackend(rdv.statut),
+          reminder: rdv.rappel
+        }));
       },
-      {
-        id: 2,
-        time: '11:30 AM',
-        patient: 'Imane Tahri',
-        type: 'Suivi',
-        status: 'completed',
-        reminder: ''
+      (error: any) => {
+        console.error('Erreur lors du chargement des rendez-vous', error);
       }
-    ];
+    );
   }
 
   get filteredAppointments() {
     return this.appointments.filter((app: any) => {
       const matchesSearch =
         !this.searchQuery ||
-        app.patient?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        ('' + app.id).toLowerCase().includes(this.searchQuery.toLowerCase());
+        app.patient?.toLowerCase().includes(this.searchQuery.toLowerCase());
 
       const matchesStatus =
         !this.selectedStatus || app.status === this.selectedStatus;
@@ -76,17 +72,50 @@ export class AppointmentsComponent implements OnInit {
     });
   }
 
+  get paginatedAppointments() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredAppointments.slice(start, end);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredAppointments.length / this.itemsPerPage);
+  }
+
+  getPagesArray(): number[] {
+    return Array(this.totalPages).fill(0).map((_, i) => i);
+  }
+
   getLabelFromStatus(status: string): string {
     switch (status) {
       case 'upcoming': return 'À venir';
+      case 'in_progress': return 'En cours';
       case 'completed': return 'Terminé';
       case 'canceled': return 'Annulé';
       default: return 'Inconnu';
     }
   }
 
+  getSelectedStatusLabel(): string {
+    switch (this.selectedStatus) {
+      case 'upcoming': return 'À Venir';
+      case 'in_progress': return 'En Cours';
+      case 'completed': return 'Terminé';
+      case 'canceled': return 'Annulé';
+      default: return '';
+    }
+  }
+
   openEditModal(appointment: any): void {
-    this.editingAppointment = { ...appointment };
+    this.editingAppointment = {
+      id: appointment.id,
+      nom_patient: appointment.nom_patient,
+      prenom_patient: appointment.prenom_patient,
+      date_heure: appointment.date_heure,
+      type: appointment.type,
+      statut: this.mapStatusToBackend(appointment.statut),
+      rappel: appointment.rappel
+    };
   }
 
   closeEditModal(): void {
@@ -94,20 +123,56 @@ export class AppointmentsComponent implements OnInit {
   }
 
   saveUpdatedAppointment(): void {
-    if (!this.editingAppointment) return;
-
-    const index = this.appointments.findIndex(a => a.id === this.editingAppointment.id);
-    if (index !== -1) {
-      this.appointments[index] = { ...this.editingAppointment };
+    if (!this.editingAppointment || !this.editingAppointment.id) {
+      alert("Aucun RDV sélectionné");
+      return;
     }
-    this.closeEditModal();
-    alert('RDV mis à jour');
+
+    const dataToSend = {
+      nom_patient: this.editingAppointment.nom_patient,
+      prenom_patient: this.editingAppointment.prenom_patient,
+      date_heure: this.formatDateTime(this.editingAppointment.time),
+      type: this.editingAppointment.type || 'Consultation',
+      statut: this.mapStatusToFrontend(this.editingAppointment.status),
+      rappel: this.editingAppointment.rappel || null
+    };
+
+    this.appointmentService.updateAppointment(this.editingAppointment.id, dataToSend).subscribe(
+      (updated: any) => {
+        const index = this.appointments.findIndex(a => a.id === updated.id);
+        if (index !== -1) {
+          this.appointments[index] = {
+            ...updated,
+            patient: updated.nom_patient,
+            time: updated.date_heure,
+            status: this.mapStatusToBackend(updated.statut),
+            reminder: updated.rappel
+          };
+        }
+        this.closeEditModal();
+        alert('Rendez-vous mis à jour');
+      },
+      (err: any) => {
+        alert("Erreur lors de la mise à jour");
+        console.error(err);
+      }
+    );
   }
 
   deleteAppointment(appointment: any): void {
+    if (!appointment.id) return;
+
     if (confirm(`Êtes-vous sûr de vouloir supprimer ${appointment.patient} ?`)) {
-      this.appointments = this.appointments.filter(a => a.id !== appointment.id);
-      alert('RDV supprimé');
+      this.appointmentService.deleteAppointment(appointment.id).subscribe(
+        () => {
+          this.appointments = this.appointments.filter(a => a.id !== appointment.id);
+          alert('RDV supprimé');
+        },
+        (err: any) => {
+          alert('Erreur lors de la suppression');
+          console.error(err);
+        }
+      );
     }
   }
 
@@ -119,32 +184,28 @@ export class AppointmentsComponent implements OnInit {
     this.selectedAppointment = null;
   }
 
-  openAddModal(): void {
-    this.showAddModal = true;
-    this.newAppointment = {
-      id: null,
-      patient: '',
-      time: '',
-      type: '',
-      status: 'upcoming',
-      reminder: ''
-    };
+  formatDateTime(time: string): string {
+    const date = new Date(time);
+    return `${date.getFullYear()}-${('0' + (date.getMonth()+1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:00`;
   }
 
-  closeAddModal(): void {
-    this.showAddModal = false;
-  }
-
-  saveNewAppointment(): void {
-    if (!this.newAppointment.patient || !this.newAppointment.time) {
-      alert('Veuillez remplir tous les champs obligatoires.');
-      return;
+  mapStatusToBackend(statut: string): string {
+    switch (statut?.toLowerCase()) {
+      case 'à venir': return 'upcoming';
+      case 'en cours': return 'in_progress';
+      case 'terminé': return 'completed';
+      case 'annulé': return 'canceled';
+      default: return '';
     }
+  }
 
-    const newId = this.appointments.length ? Math.max(...this.appointments.map(a => a.id)) + 1 : 1;
-    this.newAppointment.id = newId;
-    this.appointments.push({ ...this.newAppointment });
-    this.closeAddModal();
-    alert('Nouveau RDV ajouté');
+  mapStatusToFrontend(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'upcoming': return 'À Venir';
+      case 'in_progress': return 'En Cours';
+      case 'completed': return 'Terminé';
+      case 'canceled': return 'Annulé';
+      default: return '';
+    }
   }
 }

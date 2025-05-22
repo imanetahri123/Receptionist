@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf, NgClass } from '@angular/common';
+import { PatientService } from '../../services/patient.service';
 
 @Component({
   selector: 'app-medical-record',
@@ -9,124 +10,23 @@ import { NgFor, NgIf, NgClass } from '@angular/common';
   templateUrl: './medical-record.component.html',
   styleUrls: ['./medical-record.component.css']
 })
-export class MedicalRecordComponent {
+export class MedicalRecordComponent implements OnInit {
   currentView = 'grid';
   isListView = false;
 
-  patients = [
-    {
-      id: 1,
-      name: 'Walid Sadiq',
-      email: 'kamal@asio.com',
-      phone: '06 12 34 56 78',
-      dob: '1990-04-12',
-      photo: '/assets/images/P4.jpg',
-      status: 'active',
-      nationality: 'Marocaine',
-      bloodGroup: 'A+',
-      maritalStatus: 'Célibataire',
-      gender: 'Homme',
-      address: 'Rabat, Maroc',
-      showDetails: false
-    },
-    {
-      id: 2,
-      name: 'Imane Tahri',
-      email: 'imane@asio.com',
-      phone: '06 87 65 43 21',
-      dob: '1995-08-05',
-      photo: '/assets/images/eps3.jpg',
-      status: 'follow up',
-      nationality: 'Marocaine',
-      bloodGroup: 'O-',
-      maritalStatus: 'Mariée',
-      gender: 'Femme',
-      address: 'Casablanca, Maroc',
-      showDetails: false
-    },
-    {
-      id: 3,
-      name: 'Salwa Slimani',
-      email: 'salwa@asio.com',
-      phone: '07 11 22 33 44',
-      dob: '',
-      photo: '/assets/images/p2.jpg',
-      status: 'critical',
-      nationality: 'Marocaine',
-      bloodGroup: 'B+',
-      maritalStatus: 'Divorcée',
-      gender: 'Femme',
-      address: 'Fès, Maroc',
-      showDetails: false
-    },
-    {
-      id: 4,
-      name: 'Youssef El Alaoui',
-      email: 'youssef@asio.com',
-      phone: '06 55 44 33 22',
-      dob: '1988-11-20',
-      photo: '/assets/images/p1.jpg',
-      status: 'active',
-      nationality: 'Marocaine',
-      bloodGroup: 'AB+',
-      maritalStatus: 'Célibataire',
-      gender: 'Homme',
-      address: 'Marrakech, Maroc',
-      showDetails: false
-    },
-    {
-      id: 5,
-      name: 'Hamza Idrissi',
-      email: 'hamza@asio.com',
-      phone: '06 99 88 77 66',
-      dob: '1992-03-15',
-      photo: '/assets/images/P5.jpg',
-      status: 'follow up',
-      nationality: 'Marocaine',
-      bloodGroup: 'A-',
-      maritalStatus: 'Marié',
-      gender: 'Homme',
-      address: 'Agadir, Maroc',
-      showDetails: false
-    },
-    {
-      id: 6,
-      name: 'Ali Bensalah',
-      email: 'ali@asio.com',
-      phone: '07 66 55 44 33',
-      dob: '1994-09-10',
-      photo: '/assets/images/P6.jpeg',
-      status: 'active',
-      nationality: 'Marocaine',
-      bloodGroup: 'O+',
-      maritalStatus: 'Célibataire',
-      gender: 'Homme',
-      address: 'Tanger, Maroc',
-      showDetails: false
-    },
-    {
-      id: 7,
-      name: 'Salwa Chafiq',
-      email: 'salwac@asio.com',
-      phone: '06 44 55 66 77',
-      dob: '1993-12-25',
-      photo: '/assets/images/FE.jpg',
-      status: 'critical',
-      nationality: 'Marocaine',
-      bloodGroup: 'B-',
-      maritalStatus: 'Mariée',
-      gender: 'Femme',
-      address: 'Meknès, Maroc',
-      showDetails: false
-    }
-  ];
+  patients: any[] = [];
+  filteredPatients: any[] = [];
+  pagedPatients: any[] = [];
 
   searchQuery = '';
   selectedStatus = '';
-  filteredPatients: any[] = [...this.patients];
+
+  itemsPerPage = 10;
+  currentPage = 1;
 
   showAddModal = false;
   editingPatient: any = null;
+  selectedFile: File | null = null;
   newPatient: any = {
     id: null,
     name: '',
@@ -136,40 +36,85 @@ export class MedicalRecordComponent {
     photo: '/assets/images/default-user.png',
     status: 'active',
     nationality: '',
-    bloodGroup: '',
-    maritalStatus: '',
+    blood_group: '',
+    marital_status: '',
     gender: '',
     address: '',
     showDetails: false
   };
 
-  constructor() {}
+  constructor(private patientService: PatientService) {}
 
   ngOnInit(): void {
-    this.applyFilters();
+    this.loadPatients();
+  }
+
+  loadPatients() {
+    this.patientService.getPatients().subscribe({
+      next: (data: any[]) => {
+        this.patients = data.map(p => ({ ...p, showDetails: false }));
+        this.applyFilters(); // Applique aussi les filtres
+        this.updatePagedPatients(); // Met à jour la pagination
+      },
+      error: (err) => console.error('Erreur lors du chargement des patients', err)
+    });
+  }
+
+  applyFilters() {
+    this.filteredPatients = this.patients.filter(patient => {
+      const matchesSearch =
+        !this.searchQuery ||
+        patient.name?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        ('#' + patient.id).toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      const matchesStatus =
+        !this.selectedStatus || patient.status === this.selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    this.currentPage = 1; // Réinitialiser à la première page après un filtre
+    this.updatePagedPatients();
+  }
+
+  updatePagedPatients() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.pagedPatients = this.filteredPatients.slice(start, end);
+  }
+
+  goToPreviousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagedPatients();
+    }
+  }
+
+  goToNextPage() {
+    const maxPage = Math.ceil(this.filteredPatients.length / this.itemsPerPage);
+    if (this.currentPage < maxPage) {
+      this.currentPage++;
+      this.updatePagedPatients();
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const totalItems = this.filteredPatients.length;
+    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+    this.updatePagedPatients();
   }
 
   toggleView() {
     this.currentView = this.isListView ? 'list' : 'grid';
   }
 
-  applyFilters() {
-    this.filteredPatients = this.patients
-      .filter(patient => {
-        const matchesSearch =
-          !this.searchQuery ||
-          patient.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          ('#' + patient.id).toLowerCase().includes(this.searchQuery.toLowerCase());
-
-        const matchesStatus =
-          !this.selectedStatus || patient.status === this.selectedStatus;
-
-        return matchesSearch && matchesStatus;
-      });
-  }
-
   getStatusLabel(status: string): string {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case 'active': return 'Actif';
       case 'follow up': return 'En Suivi';
       case 'critical': return 'Urgent';
@@ -178,7 +123,7 @@ export class MedicalRecordComponent {
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case 'active': return 'bg-green-100 text-green-700';
       case 'follow up': return 'bg-yellow-100 text-yellow-700';
       case 'critical': return 'bg-red-100 text-red-700';
@@ -186,8 +131,22 @@ export class MedicalRecordComponent {
     }
   }
 
+  getPhotoUrl(photo: string): string {
+    if (!photo) return '/assets/images/default-user.png';
+    if (photo.startsWith('http')) return photo;
+    if (photo.startsWith('/storage/')) return 'http://localhost:8000' + photo;
+    return photo;
+  }
+
   onImageError(event: any) {
-    event.target.src = 'https://via.placeholder.com/60x60?text=Erreur   ';
+    event.target.src = 'https://via.placeholder.com/60x60?text=Erreur ';
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
   }
 
   openAddModal() {
@@ -201,12 +160,13 @@ export class MedicalRecordComponent {
       photo: '/assets/images/default-user.png',
       status: 'active',
       nationality: '',
-      bloodGroup: '',
-      maritalStatus: '',
+      blood_group: '',
+      marital_status: '',
       gender: '',
       address: '',
       showDetails: false
     };
+    this.selectedFile = null;
     this.showAddModal = true;
   }
 
@@ -219,37 +179,67 @@ export class MedicalRecordComponent {
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
-    const newId = this.patients.length ? Math.max(...this.patients.map(p => p.id)) + 1 : 1;
-    this.newPatient.id = newId;
-    this.newPatient.showDetails = false;
-    this.patients.push({ ...this.newPatient });
-    this.applyFilters();
-    this.closeAddModal();
-    alert('Patient ajouté');
+
+    const formData = new FormData();
+    for (const key in this.newPatient) {
+      if (this.newPatient[key] !== undefined && this.newPatient[key] !== null) {
+        formData.append(key, this.newPatient[key]);
+      }
+    }
+    if (this.selectedFile) {
+      formData.append('photo', this.selectedFile);
+    }
+
+    this.patientService.addPatient(formData).subscribe({
+      next: () => {
+        this.loadPatients();
+        this.closeAddModal();
+        alert('Patient ajouté');
+        this.selectedFile = null;
+      },
+      error: () => alert('Erreur lors de l\'ajout du patient')
+    });
   }
 
   openEditModal(patient: any) {
     this.editingPatient = { ...patient };
     this.newPatient = { ...patient };
+    this.selectedFile = null;
     this.showAddModal = true;
   }
 
   updatePatient() {
     if (!this.editingPatient || !this.editingPatient.id) return;
-    const index = this.patients.findIndex(p => p.id === this.editingPatient.id);
-    if (index !== -1) {
-      this.patients[index] = { ...this.newPatient };
+    const formData = new FormData();
+    for (const key in this.newPatient) {
+      if (this.newPatient[key] !== undefined && this.newPatient[key] !== null) {
+        formData.append(key, this.newPatient[key]);
+      }
     }
-    this.applyFilters();
-    this.showAddModal = false;
-    alert('Patient mis à jour');
+    if (this.selectedFile) {
+      formData.append('photo', this.selectedFile);
+    }
+
+    this.patientService.updatePatient(this.editingPatient.id, formData).subscribe({
+      next: () => {
+        this.loadPatients();
+        this.showAddModal = false;
+        alert('Patient mis à jour');
+        this.selectedFile = null;
+      },
+      error: () => alert('Erreur lors de la mise à jour')
+    });
   }
 
   deletePatient(patient: any) {
     if (confirm(`Supprimer ${patient.name} ?`)) {
-      this.patients = this.patients.filter(p => p.id !== patient.id);
-      this.applyFilters();
-      alert('Patient supprimé');
+      this.patientService.deletePatient(patient.id).subscribe({
+        next: () => {
+          this.loadPatients();
+          alert('Patient supprimé');
+        },
+        error: () => alert('Erreur lors de la suppression')
+      });
     }
   }
 

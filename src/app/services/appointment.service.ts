@@ -6,36 +6,58 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = 'http://localhost:8000/api/appointments'; // URL de ton backend Laravel
+  private apiUrl = 'http://localhost:8000/api/rendez_vous';
 
   constructor(private http: HttpClient) {}
 
-  getAllAppointments(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  // Formatage date : datetime-local → Y-m-d H:i:s
+  private formatDateTime(time: string): string {
+    const date = new Date(time);
+    return `${date.getFullYear()}-${('0' + (date.getMonth()+1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:00`;
   }
 
-  searchAppointments(params: any): Observable<any> {
-    let url = `${this.apiUrl}?`;
+  // Mapping statut frontend → backend
+  private mapStatusToFrontend(status: string): string {
+    switch (status) {
+      case 'upcoming': return 'À Venir';
+      case 'completed': return 'Terminé';
+      case 'canceled': return 'Annulé';
+      default: return '';
+    }
+  }
 
-    for (const key in params) {
-      if (params[key]) {
-        url += `${key}=${params[key]}&`;
-      }
+  getAppointments(params: any = {}): Observable<any> {
+    return this.http.get(this.apiUrl, { params });
+  }
+
+  addAppointment(appointment: any): Observable<any> {
+    if (!appointment.patient || !appointment.time) {
+      return new Observable(observer => observer.error('Champs obligatoires manquants'));
     }
 
-    return this.http.get(url);
+    const dataToSend = {
+      nom_patient: appointment.patient,
+      prenom_patient: appointment.prenom || '',
+      date_heure: this.formatDateTime(appointment.time),
+      type: appointment.type || 'Consultation',
+      statut: this.mapStatusToFrontend(appointment.status),
+      rappel: appointment.reminder || null
+    };
+
+    return this.http.post(this.apiUrl, dataToSend);
   }
 
-  getAppointmentById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
-  }
+  updateAppointment(id: number, appointment: any): Observable<any> {
+    const dataToSend = {
+      nom_patient: appointment.patient,
+      prenom_patient: appointment.prenom || '',
+      date_heure: this.formatDateTime(appointment.time),
+      type: appointment.type || 'Consultation',
+      statut: this.mapStatusToFrontend(appointment.status),
+      rappel: appointment.reminder || null
+    };
 
-  createAppointment(data: any): Observable<any> {
-    return this.http.post(this.apiUrl, data);
-  }
-
-  updateAppointment(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+    return this.http.put(`${this.apiUrl}/${id}`, dataToSend);
   }
 
   deleteAppointment(id: number): Observable<any> {

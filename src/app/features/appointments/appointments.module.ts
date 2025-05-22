@@ -5,6 +5,7 @@ import { AppointmentsRoutingModule } from './appointments-routing.module';
 import { AppointmentsComponent } from './appointments.component';
 
 
+
 @NgModule({
   declarations: [
     
