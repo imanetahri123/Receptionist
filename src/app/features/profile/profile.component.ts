@@ -12,76 +12,48 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ProfileComponent implements OnInit {
   readonly defaultPhoto = '/assets/images/pers.jpg';
-  readonly defaultUser = {
-    name: 'N/A',
-    email: 'N/A',
-    phone: 'N/A',
-    role: 'N/A',
-    photo: this.defaultPhoto,
-    joinDate: new Date(),
-    stats: {
-      appointments: 0,
-      doctors: 0,
-      bills: 0,
-    },
-  };
-
   user: any = null;
-  editedUser: any = { ...this.defaultUser };
+  editedUser: any = {};
   isEditing: boolean = false;
 
-  // Liste par défaut, remplacée si l'API retourne recentAppointments
-  recentAppointments: any[] = [
-    {
-      date: '2025-06-01',
-      patient: 'Mme. Slimani',
-      motif: 'Consultation',
-      status: 'Terminé'
-    },
-    {
-      date: '2025-06-03',
-      patient: 'Mr. Tahri',
-      motif: 'Examen',
-      status: 'Annulé'
-    },
-    {
-      date: '2025-06-05',
-      patient: 'M. Barkouch',
-      motif: 'Suivi',
-      status: 'À venir'
-    }
-  ];
+  isPasswordModalOpen = false;
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    const email = 'omar.reception@asio.com';
+    this.loadProfile();
+  }
 
-    this.http.get(`/api/profile/${email}`).subscribe({
+  loadProfile() {
+    console.log('🔍 Chargement du profil...');
+    this.http.get('http://localhost:8000/api/profile').subscribe({
       next: (data: any) => {
+        console.log('✅ Données reçues:', data);
         this.user = {
-          name: data?.name || this.defaultUser.name,
-          email: data?.email || this.defaultUser.email,
-          phone: data?.phone || this.defaultUser.phone,
-          role: data?.role || this.defaultUser.role,
+          name: data?.name || 'N/A',
+          email: data?.email || 'N/A',
+          phone: data?.phone || 'N/A',
+          role: data?.role || 'N/A',
           photo: data?.photo || this.defaultPhoto,
           joinDate: data?.joinDate ? new Date(data.joinDate) : null,
-          stats: {
-            appointments: data?.stats?.appointments ?? this.defaultUser.stats.appointments,
-            doctors: data?.stats?.doctors ?? this.defaultUser.stats.doctors,
-            bills: data?.stats?.bills ?? this.defaultUser.stats.bills,
-          },
         };
+        console.log('👤 User final:', this.user);
         this.editedUser = { ...this.user };
-        // Si l'API retourne les rendez-vous, on remplace la liste par défaut :
-        if (data?.recentAppointments) {
-          this.recentAppointments = data.recentAppointments;
-        }
       },
       error: (err) => {
-        console.error('Erreur lors du chargement du profil', err);
-        this.user = { ...this.defaultUser };
-        this.editedUser = { ...this.defaultUser };
+        console.error('❌ Erreur lors du chargement du profil:', err);
+        this.user = {
+          name: 'N/A',
+          email: 'N/A',
+          phone: 'N/A',
+          role: 'N/A',
+          photo: this.defaultPhoto,
+          joinDate: null,
+        };
+        this.editedUser = { ...this.user };
       }
     });
   }
@@ -98,8 +70,97 @@ export class ProfileComponent implements OnInit {
   }
 
   saveChanges() {
-    this.user = { ...this.editedUser };
-    this.closeEditModal();
-    alert('Profil mis à jour');
+    this.http.put('http://localhost:8000/api/profile', this.editedUser).subscribe({
+      next: () => {
+        this.user = { ...this.editedUser };
+        this.closeEditModal();
+        alert('Profil mis à jour avec succès');
+      },
+      error: () => alert('Erreur lors de la mise à jour du profil')
+    });
+  }
+
+  openPasswordModal() {
+    this.isPasswordModalOpen = true;
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+  }
+
+  closePasswordModal() {
+    this.isPasswordModalOpen = false;
+  }
+
+  changePassword() {
+    if (this.newPassword !== this.confirmPassword) {
+      alert('Les mots de passe ne correspondent pas.');
+      return;
+    }
+
+    if (this.newPassword.length < 6) {
+      alert('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
+    this.http.put('http://localhost:8000/api/profile/password', { 
+      newPassword: this.newPassword 
+    }).subscribe({
+      next: () => {
+        alert('Mot de passe changé avec succès !');
+        this.closePasswordModal();
+      },
+      error: () => alert('Erreur lors du changement de mot de passe')
+    });
+  }
+
+  onPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // ✅ Validation du fichier
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez sélectionner une image valide.');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB max
+      alert('L\'image ne doit pas dépasser 2MB.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    console.log('📤 Upload de la photo en cours...');
+
+    this.http.post('http://localhost:8000/api/profile/photo', formData).subscribe({
+      next: (response: any) => {
+        console.log('✅ Réponse upload photo:', response);
+        
+        if (response.photo) {
+          // ✅ Mettre à jour immédiatement la photo avec timestamp pour éviter le cache
+          const timestamp = new Date().getTime();
+          this.user.photo = response.photo + '?t=' + timestamp;
+          
+          console.log('📸 Nouvelle photo URL:', this.user.photo);
+          alert('Photo de profil mise à jour avec succès !');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Erreur upload photo:', err);
+        alert('Erreur lors du changement de photo');
+      }
+    });
+  }
+
+  // ✅ Gérer les erreurs d'image
+  onImageError(event: any) {
+    console.log('❌ Erreur de chargement d\'image:', event.target.src);
+    event.target.src = this.defaultPhoto;
+  }
+
+  // ✅ Confirmer le chargement de l'image
+  onImageLoad(event: any) {
+    console.log('✅ Image chargée avec succès:', event.target.src);
   }
 }

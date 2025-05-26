@@ -12,13 +12,16 @@ import { FormsModule } from '@angular/forms';
 export class BillsComponent {
   searchQuery = '';
   selectedDate = '';
+  Math = Math; // Pour utiliser Math dans le template
 
   invoices = [
-    { id: 1, patientName: 'Kamal', amount: 120, date: '2025-04-01', description: 'Consultation générale' },
-    { id: 2, patientName: 'Walid', amount: 80, date: '2025-04-05', description: 'Bilan sanguin' },
-    { id: 3, patientName: 'Imane', amount: 200, date: '2025-04-03', description: 'Soins intensifs' },
-    { id: 4, patientName: 'Ahmed', amount: 150, date: '2025-04-02', description: 'Radiographie' },
-    { id: 5, patientName: 'Sana', amount: 90, date: '2025-04-06', description: 'Suivi médical' }
+    { id: 1, patientName: 'Kamal Benali', amount: 120, date: '2025-04-01', description: 'Consultation générale + examens de routine' },
+    { id: 2, patientName: 'Walid Mansouri', amount: 80, date: '2025-04-05', description: 'Bilan sanguin complet' },
+    { id: 3, patientName: 'Imane Chakir', amount: 200, date: '2025-04-03', description: 'Soins intensifs et surveillance médicale' },
+    { id: 4, patientName: 'Ahmed Tazi', amount: 150, date: '2025-04-02', description: 'Radiographie thoracique et consultation' },
+    { id: 5, patientName: 'Sana El Amrani', amount: 90, date: '2025-04-06', description: 'Suivi médical post-opératoire' },
+    { id: 6, patientName: 'Omar Benzakour', amount: 250, date: '2025-04-07', description: 'Intervention chirurgicale mineure' },
+    { id: 7, patientName: 'Fatima Alaoui', amount: 65, date: '2025-04-08', description: 'Consultation de contrôle' }
   ];
 
   showModal = false;
@@ -65,13 +68,41 @@ export class BillsComponent {
     return Array(this.totalPages).fill(0).map((_, i) => i);
   }
 
+  // ✅ Nouvelles méthodes pour les statistiques
+  getTotalAmount(): number {
+    return this.invoices.reduce((total, invoice) => total + invoice.amount, 0);
+  }
+
+  getAverageAmount(): number {
+    if (this.invoices.length === 0) return 0;
+    return this.getTotalAmount() / this.invoices.length;
+  }
+
+  // ✅ Méthode pour les couleurs selon le montant
+  getAmountColorClass(amount: number): string {
+    if (amount < 100) {
+      return 'bg-green-100 text-green-800';
+    } else if (amount < 200) {
+      return 'bg-yellow-100 text-yellow-800';
+    } else {
+      return 'bg-red-100 text-red-800';
+    }
+  }
+
+  // ✅ Méthode pour réinitialiser les filtres
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.selectedDate = '';
+    this.currentPage = 1;
+  }
+
   openAddModal() {
     this.modalMode = 'add';
     this.newInvoice = {
       id: null,
       patientName: '',
       amount: null,
-      date: '',
+      date: new Date().toISOString().split('T')[0], // Date du jour par défaut
       description: ''
     };
     this.showModal = true;
@@ -99,20 +130,27 @@ export class BillsComponent {
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
+    
     if (this.modalMode === 'add') {
       const newId = this.invoices.length ? Math.max(...this.invoices.map(i => i.id)) + 1 : 1;
       this.newInvoice.id = newId;
-      this.invoices.push({ ...this.newInvoice });
+      this.invoices.unshift({ ...this.newInvoice }); // Ajouter en début de liste
     } else if (this.modalMode === 'edit') {
       const idx = this.invoices.findIndex(i => i.id === this.newInvoice.id);
       if (idx !== -1) this.invoices[idx] = { ...this.newInvoice };
     }
+    
     this.closeModal();
   }
 
   deleteInvoice(invoice: any) {
-    if (confirm(`Supprimer la facture #${invoice.id} ?`)) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la facture #${invoice.id} de ${invoice.patientName} ?`)) {
       this.invoices = this.invoices.filter(i => i.id !== invoice.id);
+      
+      // Ajuster la page courante si nécessaire
+      if (this.paginatedInvoices.length === 0 && this.currentPage > 1) {
+        this.currentPage--;
+      }
     }
   }
 }

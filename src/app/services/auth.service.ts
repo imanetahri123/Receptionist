@@ -1,4 +1,3 @@
-// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -6,26 +5,28 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class ProfileService {
   private apiUrl = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}
 
+  // Récupérer le profil (sans authentification)
   getProfile(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/profile`, {
-      withCredentials: true // ✅ Active les cookies pour Sanctum
-    });
+    return this.http.get(`${this.apiUrl}/profile`);
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { email, password }, {
-      withCredentials: true
-    });
+  // Mettre à jour le profil
+  updateProfile(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/profile`, data);
   }
 
-  logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {}, {
-      withCredentials: true
-    });
+  // Changer le mot de passe
+  updatePassword(newPassword: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/profile/password`, { newPassword });
+  }
+
+  // Upload photo
+  uploadPhoto(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/profile/photo`, formData);
   }
 }
